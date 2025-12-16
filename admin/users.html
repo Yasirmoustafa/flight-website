@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users - MY FLY CLOUDLY TOURS Admin</title>
+    <!-- Google Fonts - Brand Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Public+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <!-- Navigation (will be replaced by navbar.js) -->
+    <nav class="navbar"></nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h1 data-i18n="admin.manageUsers">Manage Users</h1>
+                <p class="section-subtitle" data-i18n="admin.manageUsersSubtitle">View and manage user accounts and roles</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Users Table -->
+    <section class="admin-content">
+        <div class="container">
+            <!-- Search and Filter -->
+            <div class="admin-filters fade-in" style="margin-bottom: 2rem;">
+                <div class="filters-bar">
+                    <div class="filter-group"
+                        style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; flex: 1;">
+                        <div style="flex: 1; min-width: 250px;">
+                            <label data-i18n="common.search">Search:</label>
+                            <input type="text" id="userSearch" class="search-input"
+                                placeholder="Search by name, email, or phone..." data-i18n-placeholder="admin.searchUsersPlaceholder">
+                        </div>
+                        <div>
+                            <label data-i18n="admin.filterByRole">Filter by Role:</label>
+                            <select id="roleFilter" class="filter-select" onchange="searchUsers()">
+                                <option value="" data-i18n="admin.allRoles">All Roles</option>
+                                <option value="admin" data-i18n="admin.admin">Admin</option>
+                                <option value="user" data-i18n="admin.user">User</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bookings-table-container fade-in">
+                <table class="bookings-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="admin.name">Name</th>
+                            <th data-i18n="admin.email">Email</th>
+                            <th data-i18n="admin.phone">Phone</th>
+                            <th data-i18n="admin.role">Role</th>
+                            <th data-i18n="admin.created">Created</th>
+                            <th data-i18n="admin.actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="6" class="text-center" data-i18n="admin.loadingUsers">Loading users...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (will be replaced by footer.js) -->
+    <footer class="footer-modern"></footer>
+
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/translations.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script src="../js/navbar.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/admin.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Initialize navbar and footer
+        document.addEventListener('DOMContentLoaded', () => {
+            initFooter();
+            initAdminNavbar('users.html');
+            applyTranslations(); // Apply translations after content is loaded
+            // Force navbar to be solid
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                navbar.classList.add('scrolled');
+            }
+        });
+    </script>
+    <script>
+        // Initialize GSAP animations (visual only, doesn't affect functionality)
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+
+                // Animate section header
+                const sectionHeader = document.querySelector('.page-header .section-header');
+                if (sectionHeader) {
+                    gsap.set(sectionHeader, { opacity: 0, y: 40 });
+                    gsap.to(sectionHeader, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: 'power3.out'
+                    });
+                }
+
+                // Animate filters bar
+                const filtersBar = document.querySelector('.admin-filters.fade-in');
+                if (filtersBar) {
+                    gsap.set(filtersBar, { opacity: 0, y: 30 });
+                    gsap.to(filtersBar, {
+                        scrollTrigger: {
+                            trigger: '.admin-filters',
+                            start: 'top 80%',
+                            toggleActions: 'play none none none'
+                        },
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        ease: 'power2.out'
+                    });
+                }
+
+                // Animate table container
+                const tableContainer = document.querySelector('.bookings-table-container.fade-in');
+                if (tableContainer) {
+                    gsap.set(tableContainer, { opacity: 0, y: 30 });
+                    gsap.to(tableContainer, {
+                        scrollTrigger: {
+                            trigger: '.admin-content',
+                            start: 'top 80%',
+                            toggleActions: 'play none none none'
+                        },
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        ease: 'power2.out'
+                    });
+                }
+            }
+        });
+
+        // Animate table rows after they are rendered (called from renderUsers)
+        function animateTableRows() {
+            if (typeof gsap !== 'undefined') {
+                const rows = document.querySelectorAll('.user-row');
+                if (rows.length > 0) {
+                    gsap.set(rows, { opacity: 0, x: -20 });
+                    gsap.to(rows, {
+                        opacity: 1,
+                        x: 0,
+                        duration: 0.4,
+                        ease: 'power2.out',
+                        stagger: 0.05
+                    });
+                }
+            }
+        }
+    </script>
+    <script>
+
+        // Wait for Supabase to load
+        setTimeout(async () => {
+            // Check admin authentication
+            const user = getCurrentUser();
+            if (!user || !isAdmin()) {
+                const errorMsg = typeof t === 'function' ? t('admin.accessDenied') : 'Access denied. Admin privileges required.';
+                alert(errorMsg);
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Load all users
+            await loadAllUsers();
+
+            // Search handler
+            const searchInput = document.getElementById('userSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', searchUsers);
+            }
+
+            // Role filter handler (also has onchange, but adding listener for consistency)
+            const roleFilter = document.getElementById('roleFilter');
+            if (roleFilter) {
+                roleFilter.addEventListener('change', searchUsers);
+            }
+
+            // Logout handler
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await signOut();
+                    window.location.href = '../index.html';
+                });
+            }
+        }, 1000);
+
+        let allUsers = []; // Store all users for search filtering
+
+        async function loadAllUsers() {
+            try {
+                if (!supabase) {
+                    console.error('Supabase not initialized');
+                    return;
+                }
+
+                // Get all profiles (including email if available)
+                // Note: This requires the "Admins can view all profiles" RLS policy
+                const { data: profiles, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error loading users:', error);
+                    let errorMsg = error.message || 'Unknown error';
+                    if (errorMsg.includes('recursion') || errorMsg.includes('infinite')) {
+                        errorMsg = 'RLS Policy Error: Infinite recursion detected. Please run fix_admin_view_all_profiles_final.sql';
+                    }
+                    const errorText = typeof t === 'function' ? t('admin.errorLoadingUsers') : 'Error loading users:';
+                    document.getElementById('usersTableBody').innerHTML = `<tr><td colspan="6" class="text-center">${errorText} ${errorMsg}<br><small>Run: fix_admin_view_all_profiles_final.sql in Supabase SQL Editor</small></td></tr>`;
+                    if (typeof applyTranslations === 'function') {
+                        setTimeout(() => applyTranslations(), 100);
+                    }
+                    return;
+                }
+
+                console.log('Loaded profiles:', profiles); // Debug log
+
+                // Store all users for search
+                allUsers = profiles || [];
+
+                // Try to get emails from auth.users for profiles that don't have email
+                // We can't query auth.users directly, but we can enhance profiles with current user's email
+                const currentUser = getCurrentUser();
+                const enhancedProfiles = (profiles || []).map(profile => {
+                    // If profile has email, use it
+                    if (profile.email) {
+                        return profile;
+                    }
+
+                    // If it's the current user, use their email
+                    if (currentUser && currentUser.id === profile.id && currentUser.email) {
+                        return { ...profile, email: currentUser.email };
+                    }
+
+                    // Otherwise, keep as is (will show user ID in UI)
+                    return profile;
+                });
+
+                allUsers = enhancedProfiles;
+
+                // Render users
+                renderUsers(allUsers);
+            } catch (error) {
+                console.error('Error loading users:', error);
+                const errorText = typeof t === 'function' ? t('admin.errorLoadingUsers') : 'Error loading users';
+                document.getElementById('usersTableBody').innerHTML = `<tr><td colspan="6" class="text-center">${errorText}</td></tr>`;
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 100);
+                }
+            }
+        }
+
+        function renderUsers(profiles) {
+            const tableBody = document.getElementById('usersTableBody');
+
+            if (!profiles || profiles.length === 0) {
+                const noUsersText = typeof t === 'function' ? t('admin.noUsersFound') : 'No users found';
+                tableBody.innerHTML = `<tr><td colspan="6" class="text-center">${noUsersText}</td></tr>`;
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 100);
+                }
+                return;
+            }
+
+            const currentUser = getCurrentUser();
+
+            tableBody.innerHTML = profiles.map(profile => {
+                const currentRole = (profile.role || 'user').toLowerCase();
+                const isAdmin = currentRole === 'admin';
+                const isCurrentUser = currentUser && currentUser.id === profile.id;
+
+                // Get email: try profile.email first, then currentUser.email if it's the current user
+                let email = profile.email;
+                if (!email && isCurrentUser && currentUser.email) {
+                    email = currentUser.email;
+                }
+                if (!email) {
+                    // Email not available - show user ID shortened with note
+                    email = profile.id.substring(0, 8) + '... (ID)';
+                }
+
+                return `
+                    <tr class="user-row">
+                        <td>
+                            <div class="user-name-cell">
+                                <strong>${profile.full_name || 'N/A'}</strong>
+                            </div>
+                        </td>
+                        <td>${email}</td>
+                        <td>${profile.phone || '-'}</td>
+                        <td>
+                            <span class="status-badge ${isAdmin ? 'approved' : 'pending'}">${(profile.role || 'user').toUpperCase()}</span>
+                        </td>
+                        <td>${formatDate(profile.created_at)}</td>
+                        <td>
+                            <div class="actions-cell">
+                                ${isCurrentUser
+                        ? `<span style="color: var(--text-secondary); font-size: 0.875rem;" data-i18n="admin.currentUser">${typeof t === 'function' ? t('admin.currentUser') : 'Current User'}</span>`
+                        : `<button class="action-btn-icon delete-btn" 
+                                           onclick="deleteUser('${profile.id}', ${JSON.stringify(profile.full_name || 'this user')})"
+                                           title="${typeof t === 'function' ? t('admin.deleteUser') : 'Delete User'}">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        </svg>
+                                   </button>`
+                    }
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            // Apply translations to dynamically generated content
+            if (typeof applyTranslations === 'function') {
+                setTimeout(() => applyTranslations(), 200);
+            }
+
+            // Animate table rows after rendering
+            setTimeout(animateTableRows, 50);
+        }
+
+        function searchUsers() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase().trim();
+            const roleFilter = document.getElementById('roleFilter').value.toLowerCase();
+
+            let filtered = allUsers;
+
+            // Apply role filter first
+            if (roleFilter) {
+                filtered = filtered.filter(profile => {
+                    const profileRole = (profile.role || 'user').toLowerCase();
+                    return profileRole === roleFilter;
+                });
+            }
+
+            // Apply search term filter
+            if (searchTerm) {
+                filtered = filtered.filter(profile => {
+                    const name = (profile.full_name || '').toLowerCase();
+                    const email = (profile.email || '').toLowerCase();
+                    const phone = (profile.phone || '').toLowerCase();
+                    const userId = profile.id.toLowerCase();
+
+                    return name.includes(searchTerm) ||
+                        email.includes(searchTerm) ||
+                        phone.includes(searchTerm) ||
+                        userId.includes(searchTerm);
+                });
+            }
+
+            renderUsers(filtered);
+        }
+
+        async function deleteUser(userId, userName) {
+            const confirmMsg = typeof t === 'function' 
+                ? t('admin.confirmDeleteUser').replace('{name}', userName)
+                : `Are you sure you want to delete ${userName}? This will remove their profile from the database. This action cannot be undone.\n\nNote: The user account will still exist in Authentication. To fully delete, go to Supabase Dashboard → Authentication → Users.`;
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+
+            try {
+                console.log('Deleting user profile:', userId);
+
+                // Delete from profiles table
+                // Note: We can only delete from profiles table, not from auth.users
+                // The user account will still exist in auth.users but won't have a profile
+                // To fully delete, you'd need to use Supabase Admin API or Dashboard
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .delete()
+                    .eq('id', userId)
+                    .select();
+
+                if (error) {
+                    console.error('Error deleting user:', error);
+                    const errorMsg = typeof t === 'function' ? t('admin.errorDeletingUser') : 'Error deleting user:';
+                    alert(`${errorMsg} ${error.message}\n\nMake sure you ran the SQL fix: fix_admin_delete_profiles.sql`);
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    const notFoundMsg = typeof t === 'function' ? t('admin.userNotFound') : 'User not found or already deleted.';
+                    alert(notFoundMsg);
+                    await loadAllUsers();
+                    return;
+                }
+
+                console.log('User deleted successfully from database:', data);
+                alert(`User ${userName} has been deleted successfully from the database.\n\nNote: Their account still exists in Authentication. To fully remove, delete from Supabase Dashboard → Authentication → Users.`);
+
+                // Reload users list
+                await loadAllUsers();
+
+                // Clear search if active
+                const searchInput = document.getElementById('userSearch');
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                const errorMsg = typeof t === 'function' ? t('admin.errorDeletingUser') : 'Error deleting user:';
+                alert(`${errorMsg} ${error.message}`);
+            }
+        }
+
+    </script>
+</body>
+
+</html>

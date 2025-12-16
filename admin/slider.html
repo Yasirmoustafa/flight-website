@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Slider - MY FLY CLOUDLY TOURS Admin</title>
+    <!-- Google Fonts - Brand Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Public+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+
+<body>
+    <!-- Navigation (will be replaced by navbar.js) -->
+    <nav class="navbar"></nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h1 data-i18n="admin.manageSlider">Manage Homepage Slider</h1>
+                <p class="section-subtitle" data-i18n="admin.manageSliderSubtitle">Add, edit, or remove slider images for the homepage</p>
+                <div style="margin-top: var(--spacing-lg);">
+                    <button class="btn btn-primary" onclick="openSliderModal()" data-i18n="admin.addNewSlide">+ Add New Slide</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slider Images List -->
+    <section class="admin-content">
+        <div class="container">
+            <div class="slider-admin-grid" id="sliderAdminGrid">
+                <!-- Slider images will be loaded here -->
+                <div class="text-center" style="padding: 2rem;">
+                    <p data-i18n="admin.loadingSliderImages">Loading slider images...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add/Edit Slider Modal -->
+    <div id="sliderModal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="modalTitle" data-i18n="admin.addNewSlide">Add New Slide</h2>
+                <button class="modal-close" onclick="closeSliderModal()">&times;</button>
+            </div>
+            <form id="sliderForm" class="modal-body">
+                <div class="form-group">
+                    <label for="sliderImageFile" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-secondary);" data-i18n="admin.uploadImageFile">
+                        Upload Image File
+                    </label>
+                    <input type="file" id="sliderImageFile" name="sliderImageFile" accept="image/*" class="file-input">
+                    <small style="display: block; margin-top: 0.25rem; color: var(--text-secondary); font-size: 0.875rem;" data-i18n="admin.sliderImageFileHelp">
+                        Max 10MB. JPG, PNG, GIF, WEBP. Recommended: 1920x1080px or larger.
+                    </small>
+                    <div id="imagePreview" style="margin-top: 1rem; display: none; text-align: center; border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 1rem;">
+                        <img id="imagePreviewImg" src="" alt="Image Preview" style="max-width: 100%; max-height: 300px; object-fit: contain; border-radius: var(--radius-sm);">
+                    </div>
+                </div>
+                <div style="text-align: center; color: var(--text-secondary); font-weight: 500; margin: 1rem 0;" data-i18n="common.or">OR</div>
+                <div class="form-group">
+                    <label for="sliderImageUrl" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-secondary);" data-i18n="admin.imageUrlAlternative">
+                        Image URL (Alternative)
+                    </label>
+                    <input type="url" id="sliderImageUrl" name="sliderImageUrl" placeholder="https://example.com/image.jpg" data-i18n-placeholder="admin.imageUrlPlaceholder">
+                    <small style="display: block; margin-top: 0.25rem; color: var(--text-secondary); font-size: 0.875rem;" data-i18n="admin.imageUrlHelp">
+                        Enter a direct image URL if you prefer not to upload
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label for="sliderTitle" data-i18n="admin.sliderTitle">Title (Optional)</label>
+                    <input type="text" id="sliderTitle" name="sliderTitle" placeholder="e.g., Experience the Sky" data-i18n-placeholder="admin.sliderTitlePlaceholder">
+                </div>
+                <div class="form-group">
+                    <label for="sliderSubtitle" data-i18n="admin.sliderSubtitle">Subtitle (Optional)</label>
+                    <input type="text" id="sliderSubtitle" name="sliderSubtitle" placeholder="e.g., Your journey to aviation excellence" data-i18n-placeholder="admin.sliderSubtitlePlaceholder">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sliderDisplayOrder" data-i18n="admin.displayOrder">Display Order</label>
+                        <input type="number" id="sliderDisplayOrder" name="sliderDisplayOrder" min="0" value="0" placeholder="0">
+                        <small style="display: block; margin-top: 0.25rem; color: var(--text-secondary); font-size: 0.875rem;" data-i18n="admin.displayOrderHelp">
+                            Lower numbers appear first
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="sliderActive" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="sliderActive" name="sliderActive" checked>
+                            <span data-i18n="admin.activeShowHomepage">Active (Show on homepage)</span>
+                        </label>
+                    </div>
+                </div>
+                <div id="sliderError" class="error-message" style="display: none;"></div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeSliderModal()" data-i18n="common.cancel">Cancel</button>
+                <button type="submit" form="sliderForm" class="btn btn-primary">
+                    <span class="btn-text" data-i18n="admin.saveSlide">Save Slide</span>
+                    <span class="btn-loader" style="display: none;" data-i18n="common.loading">Saving...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/translations.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script src="../js/navbar.js"></script>
+    <script src="../js/footer.js"></script>
+    <script>
+        // Wait for Supabase to initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize navbar
+            initAdminNavbar('slider.html');
+            initFooter();
+            applyTranslations(); // Apply translations after content is loaded
+
+            // Check admin access
+            if (!supabase) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            if (typeof isAdmin === 'function' && !isAdmin()) {
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Load slider images
+            await loadSliderImages();
+
+            // Setup form submission
+            const form = document.getElementById('sliderForm');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await saveSlider();
+                });
+            }
+
+            // Setup image preview
+            const fileInput = document.getElementById('sliderImageFile');
+            if (fileInput) {
+                fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const preview = document.getElementById('imagePreview');
+                            const previewImg = document.getElementById('imagePreviewImg');
+                            if (preview && previewImg) {
+                                previewImg.src = e.target.result;
+                                preview.style.display = 'block';
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+
+        let allSliderImages = [];
+        let editingSliderId = null;
+
+        // Load all slider images
+        async function loadSliderImages() {
+            try {
+                if (!supabase) {
+                    console.error('Supabase not initialized');
+                    return;
+                }
+
+                const { data, error } = await supabase
+                    .from('slider_images')
+                    .select('*')
+                    .order('display_order', { ascending: true })
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error loading slider images:', error);
+                    const errorText = typeof t === 'function' ? t('admin.errorLoadingSliderImages') : 'Error loading slider images:';
+                    document.getElementById('sliderAdminGrid').innerHTML = 
+                        `<div class="text-center" style="padding: 2rem;"><p>${errorText} ${error.message}</p></div>`;
+                    if (typeof applyTranslations === 'function') {
+                        setTimeout(() => applyTranslations(), 100);
+                    }
+                    return;
+                }
+
+                allSliderImages = data || [];
+                renderSliderImages(allSliderImages);
+            } catch (error) {
+                console.error('Error loading slider images:', error);
+                const errorText = typeof t === 'function' ? t('admin.errorLoadingSliderImages') : 'Error loading slider images';
+                document.getElementById('sliderAdminGrid').innerHTML = 
+                    `<div class="text-center" style="padding: 2rem;"><p>${errorText}</p></div>`;
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 100);
+                }
+            }
+        }
+
+        // Render slider images
+        function renderSliderImages(images) {
+            const grid = document.getElementById('sliderAdminGrid');
+            if (!grid) return;
+
+            if (!images || images.length === 0) {
+                const noSlidesText = typeof t === 'function' ? t('admin.noSliderImages') : 'No slider images found. Add your first slide!';
+                grid.innerHTML = `<div class="text-center" style="padding: 2rem;"><p>${noSlidesText}</p></div>`;
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 100);
+                }
+                return;
+            }
+
+            const untitledText = typeof t === 'function' ? t('admin.untitledSlide') : 'Untitled Slide';
+            const noSubtitleText = typeof t === 'function' ? t('admin.noSubtitle') : 'No subtitle';
+            const orderText = typeof t === 'function' ? t('admin.order') : 'Order:';
+            const activeText = typeof t === 'function' ? t('admin.active') : 'Active';
+            const inactiveText = typeof t === 'function' ? t('admin.inactive') : 'Inactive';
+            const editText = typeof t === 'function' ? t('common.edit') : 'Edit';
+            const deleteText = typeof t === 'function' ? t('common.delete') : 'Delete';
+            
+            grid.innerHTML = images.map(slide => `
+                <div class="service-admin-card">
+                    <div class="service-admin-image">
+                        <img src="${slide.image_url}" alt="${slide.title || 'Slide'}" style="width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius-md);">
+                    </div>
+                    <div class="service-admin-content">
+                        <h3>${slide.title || untitledText}</h3>
+                        <p>${slide.subtitle || noSubtitleText}</p>
+                        <div class="service-admin-meta">
+                            <span class="duration">${orderText} ${slide.display_order}</span>
+                            <span class="status ${slide.active ? 'active' : 'inactive'}">${slide.active ? activeText : inactiveText}</span>
+                        </div>
+                        <div class="service-admin-actions">
+                            <button class="btn btn-outline" onclick="editSlider('${slide.id}')" data-i18n="common.edit">${editText}</button>
+                            <button class="btn btn-danger" onclick="deleteSlider('${slide.id}', '${slide.title || 'this slide'}')" data-i18n="common.delete">${deleteText}</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Apply translations to dynamically generated content
+            if (typeof applyTranslations === 'function') {
+                setTimeout(() => applyTranslations(), 200);
+            }
+        }
+
+        // Open modal for adding new slide
+        function openSliderModal() {
+            editingSliderId = null;
+            const titleText = typeof t === 'function' ? t('admin.addNewSlide') : 'Add New Slide';
+            document.getElementById('modalTitle').textContent = titleText;
+            // Apply translations to modal title
+            if (typeof applyTranslations === 'function') {
+                setTimeout(() => applyTranslations(), 100);
+            }
+            document.getElementById('sliderForm').reset();
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('sliderImageUrl').value = '';
+            document.getElementById('sliderActive').checked = true;
+            document.getElementById('sliderDisplayOrder').value = allSliderImages.length;
+            document.getElementById('sliderError').style.display = 'none';
+            document.getElementById('sliderModal').style.display = 'flex';
+        }
+
+        // Open modal for editing
+        function editSlider(sliderId) {
+            const slide = allSliderImages.find(s => s.id === sliderId);
+            if (!slide) {
+                const errorMsg = typeof t === 'function' ? t('admin.slideNotFound') : 'Slide not found';
+                alert(errorMsg);
+                return;
+            }
+
+            editingSliderId = sliderId;
+            const titleText = typeof t === 'function' ? t('admin.editSlide') : 'Edit Slide';
+            document.getElementById('modalTitle').textContent = titleText;
+            // Apply translations to modal title
+            if (typeof applyTranslations === 'function') {
+                setTimeout(() => applyTranslations(), 100);
+            }
+            document.getElementById('sliderImageUrl').value = slide.image_url || '';
+            document.getElementById('sliderTitle').value = slide.title || '';
+            document.getElementById('sliderSubtitle').value = slide.subtitle || '';
+            document.getElementById('sliderDisplayOrder').value = slide.display_order || 0;
+            document.getElementById('sliderActive').checked = slide.active !== false;
+            document.getElementById('sliderImageFile').value = '';
+            
+            // Show preview of current image
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('imagePreviewImg');
+            if (preview && previewImg && slide.image_url) {
+                previewImg.src = slide.image_url;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+            
+            document.getElementById('sliderError').style.display = 'none';
+            document.getElementById('sliderModal').style.display = 'flex';
+        }
+
+        // Close modal
+        function closeSliderModal() {
+            document.getElementById('sliderModal').style.display = 'none';
+            editingSliderId = null;
+            document.getElementById('sliderForm').reset();
+            document.getElementById('imagePreview').style.display = 'none';
+        }
+
+        // Upload slider image to Supabase Storage
+        async function uploadSliderImage(file) {
+            try {
+                if (!supabase) {
+                    throw new Error('Supabase not initialized');
+                }
+
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    throw new Error('Invalid file type. Only JPG, PNG, GIF, WEBP are allowed.');
+                }
+
+                // Validate file size (max 10MB)
+                const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+                if (file.size > MAX_FILE_SIZE) {
+                    throw new Error('File size exceeds 10MB limit.');
+                }
+
+                // Generate unique filename
+                const fileExt = file.name.split('.').pop();
+                const fileName = `slider_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+                const filePath = `slider/${fileName}`;
+
+                // Upload to Supabase Storage
+                const { data, error } = await supabase.storage
+                    .from('service-images')
+                    .upload(filePath, file, {
+                        cacheControl: '3600',
+                        upsert: false
+                    });
+
+                if (error) {
+                    console.error('Upload error:', error);
+                    throw new Error('Supabase Storage upload failed: ' + error.message);
+                }
+
+                // Get public URL
+                const { data: urlData } = supabase.storage
+                    .from('service-images')
+                    .getPublicUrl(filePath);
+
+                if (!urlData || !urlData.publicUrl) {
+                    throw new Error('Failed to get public URL for uploaded image.');
+                }
+
+                return urlData.publicUrl;
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                throw error;
+            }
+        }
+
+        // Save slider image
+        async function saveSlider() {
+            const form = document.getElementById('sliderForm');
+            if (!form) {
+                console.error('Slider form not found');
+                return;
+            }
+
+            const errorDiv = document.getElementById('sliderError');
+            const modal = document.getElementById('sliderModal');
+            const submitBtn = modal ? modal.querySelector('button[type="submit"]') : null;
+
+            let imageUrl = null;
+            const fileInput = document.getElementById('sliderImageFile');
+            const urlInput = document.getElementById('sliderImageUrl');
+
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                try {
+                    showButtonLoading(submitBtn);
+                    if (errorDiv) hideMessage(errorDiv);
+                    
+                    imageUrl = await uploadSliderImage(fileInput.files[0]);
+                    console.log('Image uploaded successfully:', imageUrl);
+                } catch (uploadError) {
+                    if (submitBtn) hideButtonLoading(submitBtn);
+                    if (errorDiv) showError(errorDiv, 'Failed to upload image: ' + (uploadError.message || 'Unknown error'));
+                    return;
+                }
+            } else if (urlInput && urlInput.value.trim()) {
+                imageUrl = urlInput.value.trim();
+            } else if (editingSliderId) {
+                // If editing and no new image provided, keep existing image_url
+                const existingSlide = allSliderImages.find(s => s.id === editingSliderId);
+                if (existingSlide) {
+                    imageUrl = existingSlide.image_url;
+                }
+            }
+
+            if (!imageUrl) {
+                const errorMsg = typeof t === 'function' ? t('admin.provideImage') : 'Please provide an image (upload file or enter URL)';
+                if (errorDiv) showError(errorDiv, errorMsg);
+                if (submitBtn) hideButtonLoading(submitBtn);
+                return;
+            }
+
+            const sliderData = {
+                image_url: imageUrl,
+                title: document.getElementById('sliderTitle').value.trim() || null,
+                subtitle: document.getElementById('sliderSubtitle').value.trim() || null,
+                display_order: parseInt(document.getElementById('sliderDisplayOrder').value) || 0,
+                active: document.getElementById('sliderActive').checked
+            };
+
+            try {
+                let result;
+                if (editingSliderId) {
+                    // Update existing slide
+                    const { data, error } = await supabase
+                        .from('slider_images')
+                        .update(sliderData)
+                        .eq('id', editingSliderId)
+                        .select();
+
+                    if (error) throw error;
+                    result = data;
+                } else {
+                    // Create new slide
+                    const { data, error } = await supabase
+                        .from('slider_images')
+                        .insert(sliderData)
+                        .select();
+
+                    if (error) throw error;
+                    result = data;
+                }
+
+                if (submitBtn) hideButtonLoading(submitBtn);
+                if (errorDiv) hideMessage(errorDiv);
+
+                // Reload slider images
+                await loadSliderImages();
+                closeSliderModal();
+
+                // Show success message
+                const successMsg = editingSliderId 
+                    ? (typeof t === 'function' ? t('admin.slideUpdated') : 'Slide updated successfully!')
+                    : (typeof t === 'function' ? t('admin.slideAdded') : 'Slide added successfully!');
+                if (typeof showSuccess === 'function') {
+                    showSuccess(null, successMsg);
+                } else {
+                    alert(successMsg);
+                }
+            } catch (error) {
+                console.error('Error saving slide:', error);
+                if (submitBtn) hideButtonLoading(submitBtn);
+                const errorMsg = typeof t === 'function' ? t('admin.errorSavingSlide') : 'Failed to save slide:';
+                if (errorDiv) showError(errorDiv, `${errorMsg} ${error.message || 'Unknown error'}`);
+            }
+        }
+
+        // Delete slider image
+        async function deleteSlider(sliderId, slideName) {
+            const confirmMsg = typeof t === 'function' 
+                ? t('admin.confirmDeleteSlide').replace('{name}', slideName)
+                : `Are you sure you want to delete "${slideName}"? This action cannot be undone.`;
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+
+            try {
+                if (!supabase) {
+                    throw new Error('Supabase not initialized');
+                }
+
+                const { error } = await supabase
+                    .from('slider_images')
+                    .delete()
+                    .eq('id', sliderId);
+
+                if (error) throw error;
+
+                // Reload slider images
+                await loadSliderImages();
+
+                const successMsg = typeof t === 'function' ? t('admin.slideDeleted') : 'Slide deleted successfully!';
+                if (typeof showSuccess === 'function') {
+                    showSuccess(null, successMsg);
+                } else {
+                    alert(successMsg);
+                }
+            } catch (error) {
+                console.error('Error deleting slide:', error);
+                const errorMsg = typeof t === 'function' ? t('admin.errorDeletingSlide') : 'Failed to delete slide:';
+                alert(`${errorMsg} ${error.message || 'Unknown error'}`);
+            }
+        }
+    </script>
+</body>
+
+</html>
+

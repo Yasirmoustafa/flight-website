@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Bookings - MY FLY CLOUDLY TOURS Admin</title>
+    <!-- Google Fonts - Brand Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Public+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <!-- Navigation (will be replaced by navbar.js) -->
+    <nav class="navbar"></nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h1 data-i18n="admin.manageBookings">Manage Bookings</h1>
+                <p class="section-subtitle" data-i18n="admin.manageBookingsSubtitle">View and manage all customer bookings</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters and Search -->
+    <section class="admin-filters">
+        <div class="container">
+            <div class="filters-bar fade-in">
+                <div class="filter-group">
+                    <label data-i18n="admin.filterByStatus">Filter by Status:</label>
+                    <select id="statusFilter" class="filter-select">
+                        <option value="all" data-i18n="admin.all">All</option>
+                        <option value="pending" data-i18n="admin.pending">Pending</option>
+                        <option value="approved" data-i18n="admin.approved">Approved</option>
+                        <option value="rejected" data-i18n="admin.rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="search-group">
+                    <input type="text" id="searchInput" placeholder="Search by customer name or service..."
+                        class="search-input" data-i18n-placeholder="admin.searchPlaceholder">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bookings Table -->
+    <section class="admin-content">
+        <div class="container">
+            <div class="bookings-table-container fade-in">
+                <table class="bookings-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="admin.customer">Customer</th>
+                            <th data-i18n="admin.service">Service</th>
+                            <th data-i18n="admin.date">Date</th>
+                            <th data-i18n="admin.time">Time</th>
+                            <th data-i18n="admin.participants">Participants</th>
+                            <th data-i18n="admin.totalPrice">Total Price</th>
+                            <th data-i18n="admin.status">Status</th>
+                            <th data-i18n="admin.actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingsTableBody">
+                        <!-- Bookings will be loaded here -->
+                        <tr>
+                            <td colspan="8" class="text-center" data-i18n="admin.loadingBookings">Loading bookings...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Details Modal -->
+    <div id="bookingModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="admin.bookingDetails">Booking Details</h2>
+                <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="bookingDetails">
+                <!-- Booking details will be loaded here -->
+            </div>
+            <div class="modal-footer" id="modalActions">
+                <!-- Action buttons will be shown here for pending bookings -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Message Modal -->
+    <div id="adminMessageModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2 id="adminMessageModalTitle" data-i18n="admin.addMessage">Add Message</h2>
+                <button class="modal-close" onclick="closeAdminMessageModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="adminMessageModalText" style="margin-bottom: 1rem; color: var(--text-secondary);" data-i18n="admin.provideMessage">
+                    Please provide a message for the user (optional but recommended):
+                </p>
+                <textarea id="adminMessageInput" rows="5"
+                    placeholder="E.g., 'Your booking has been approved! Please arrive 30 minutes early.' or 'Unfortunately, this date is not available. Please select another date.'"
+                    style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; resize: vertical;" data-i18n-placeholder="admin.messagePlaceholder"></textarea>
+            </div>
+            <div class="modal-footer" style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closeAdminMessageModal()" data-i18n="common.cancel">Cancel</button>
+                <button class="btn btn-primary" id="adminMessageConfirmBtn" data-i18n="common.confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (will be replaced by footer.js) -->
+    <footer class="footer-modern"></footer>
+
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/translations.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script src="../js/navbar.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/bookings.js"></script>
+    <script src="../js/admin.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Initialize navbar and footer
+        document.addEventListener('DOMContentLoaded', () => {
+            initFooter();
+            initAdminNavbar('bookings.html');
+            applyTranslations(); // Apply translations after content is loaded
+            // Force navbar to be solid
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                navbar.classList.add('scrolled');
+            }
+        });
+    </script>
+    <script>
+        // Initialize GSAP animations
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+
+                // Animate section header
+                const sectionHeader = document.querySelector('.page-header .section-header');
+                if (sectionHeader) {
+                    gsap.set(sectionHeader, { opacity: 0, y: 40 });
+                    gsap.to(sectionHeader, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: 'power3.out'
+                    });
+                }
+
+                // Animate filters bar
+                const filtersBar = document.querySelector('.filters-bar.fade-in');
+                if (filtersBar) {
+                    gsap.set(filtersBar, { opacity: 0, y: 30 });
+                    gsap.to(filtersBar, {
+                        scrollTrigger: {
+                            trigger: '.admin-filters',
+                            start: 'top 80%',
+                            toggleActions: 'play none none none'
+                        },
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        ease: 'power2.out'
+                    });
+                }
+
+                // Animate table container
+                const tableContainer = document.querySelector('.bookings-table-container.fade-in');
+                if (tableContainer) {
+                    gsap.set(tableContainer, { opacity: 0, y: 30 });
+                    gsap.to(tableContainer, {
+                        scrollTrigger: {
+                            trigger: '.admin-content',
+                            start: 'top 80%',
+                            toggleActions: 'play none none none'
+                        },
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        ease: 'power2.out'
+                    });
+                }
+            }
+        });
+    </script>
+    <script>
+        let allBookings = [];
+        let filteredBookings = [];
+
+        // Wait for Supabase to load
+        setTimeout(async () => {
+            // Check admin authentication
+            const user = getCurrentUser();
+            if (!user || !isAdmin()) {
+                const errorMsg = typeof t === 'function' ? t('admin.accessDenied') : 'Access denied. Admin privileges required.';
+                alert(errorMsg);
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Load all bookings
+            await loadAllBookings();
+
+            // Check if viewing specific booking from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookingId = urlParams.get('booking');
+            if (bookingId) {
+                viewBookingDetails(bookingId);
+            }
+
+            // Filter handlers
+            document.getElementById('statusFilter').addEventListener('change', (e) => {
+                filterBookings(e.target.value);
+            });
+
+            document.getElementById('searchInput').addEventListener('input', debounce((e) => {
+                searchBookings(e.target.value);
+            }, 300));
+
+            // Logout handler
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await signOut();
+                    window.location.href = '../index.html';
+                });
+            }
+        }, 1000);
+
+        async function loadAllBookings() {
+            try {
+                const { data: bookings, error } = await getAllBookings();
+                const tableBody = document.getElementById('bookingsTableBody');
+
+                if (error) {
+                    console.error('Error loading bookings:', error);
+                    const errorText = typeof t === 'function' ? t('admin.errorLoadingBookings') : 'Error loading bookings:';
+                    tableBody.innerHTML = `<tr><td colspan="8" class="text-center">${errorText} ${error.message || 'Unknown error'}</td></tr>`;
+                    // Apply translations to dynamically generated content
+                    if (typeof applyTranslations === 'function') {
+                        setTimeout(() => applyTranslations(), 100);
+                    }
+                    return;
+                }
+
+                allBookings = bookings || [];
+                filteredBookings = [...allBookings];
+                renderBookings();
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                const errorText = typeof t === 'function' ? t('admin.errorLoadingBookings') : 'Error loading bookings:';
+                document.getElementById('bookingsTableBody').innerHTML = `<tr><td colspan="8" class="text-center">${errorText} ${error.message || 'Unknown error'}</td></tr>`;
+                // Apply translations to dynamically generated content
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 100);
+                }
+            }
+        }
+
+        function renderBookings() {
+            const tableBody = document.getElementById('bookingsTableBody');
+
+            if (filteredBookings.length === 0) {
+                const noBookingsText = typeof t === 'function' ? t('admin.noBookingsFound') : 'No bookings found';
+                tableBody.innerHTML = `<tr><td colspan="8" class="text-center">${noBookingsText}</td></tr>`;
+                // Apply translations to dynamically generated content
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 100);
+                }
+                return;
+            }
+
+            tableBody.innerHTML = filteredBookings.map(booking => {
+                // Handle nested objects - Supabase returns them as objects
+                const service = booking.services || {};
+                const profile = booking.profiles || {};
+                const statusClass = getStatusBadgeClass(booking.status);
+
+                return `
+                    <tr class="booking-row">
+                        <td>
+                            <div class="customer-cell">
+                                <strong>${profile.full_name || profile.email || 'N/A'}</strong>
+                                ${profile.email ? `<span class="customer-email">${profile.email}</span>` : ''}
+                            </div>
+                        </td>
+                        <td>${service.name || 'N/A'}</td>
+                        <td>${booking.booking_date ? formatDate(booking.booking_date) : 'N/A'}</td>
+                        <td>${booking.booking_time ? formatTime(booking.booking_time) : 'N/A'}</td>
+                        <td>${booking.participants || 0}</td>
+                        <td><strong>${booking.total_price ? formatCurrency(booking.total_price) : 'RM 0'}</strong></td>
+                        <td><span class="status-badge ${statusClass}">${booking.status || 'pending'}</span></td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="action-btn view-btn" onclick="viewBookingDetails('${booking.id}')" title="${typeof t === 'function' ? t('admin.viewDetails') : 'View Details'}">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                                ${booking.status === 'pending' ? `
+                                    <button class="action-btn approve-btn" onclick="handleApproveBooking('${booking.id}')" title="${typeof t === 'function' ? t('admin.approve') : 'Approve'}">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </button>
+                                    <button class="action-btn reject-btn" onclick="handleRejectBooking('${booking.id}')" title="${typeof t === 'function' ? t('admin.reject') : 'Reject'}">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            // Apply translations to dynamically generated content
+            if (typeof applyTranslations === 'function') {
+                setTimeout(() => applyTranslations(), 200);
+            }
+
+            // Animate table rows
+            setTimeout(() => {
+                if (typeof gsap !== 'undefined') {
+                    const rows = document.querySelectorAll('.booking-row');
+                    if (rows.length > 0) {
+                        gsap.set(rows, { opacity: 0, x: -20 });
+                        gsap.to(rows, {
+                            opacity: 1,
+                            x: 0,
+                            duration: 0.4,
+                            ease: 'power2.out',
+                            stagger: 0.05
+                        });
+                    }
+                }
+            }, 100);
+        }
+
+        function filterBookings(status) {
+            if (status === 'all') {
+                filteredBookings = [...allBookings];
+            } else {
+                filteredBookings = allBookings.filter(b => b.status === status);
+            }
+            renderBookings();
+        }
+
+        function searchBookings(query) {
+            const lowerQuery = query.toLowerCase();
+            filteredBookings = allBookings.filter(booking => {
+                const service = booking.services || {};
+                const profile = booking.profiles || {};
+                return (
+                    (profile.full_name && profile.full_name.toLowerCase().includes(lowerQuery)) ||
+                    (profile.email && profile.email.toLowerCase().includes(lowerQuery)) ||
+                    (service.name && service.name.toLowerCase().includes(lowerQuery))
+                );
+            });
+            renderBookings();
+        }
+
+        async function viewBookingDetails(bookingId) {
+            const booking = allBookings.find(b => b.id === bookingId);
+            if (!booking) {
+                const { data, error } = await getBookingById(bookingId);
+                if (error || !data) {
+                    const errorMsg = typeof t === 'function' ? t('admin.bookingNotFound') : 'Booking not found';
+                    alert(errorMsg);
+                    return;
+                }
+                displayBookingModal(data);
+                return;
+            }
+            displayBookingModal(booking);
+        }
+
+        function displayBookingModal(booking) {
+            const service = booking.services || {};
+            const profile = booking.profiles || {};
+            const statusClass = getStatusBadgeClass(booking.status);
+
+            const modal = document.getElementById('bookingModal');
+            const detailsDiv = document.getElementById('bookingDetails');
+            const actionsDiv = document.getElementById('modalActions');
+
+            // Sanitize user input to prevent XSS
+            const safeFullName = escapeHTML(profile.full_name || 'N/A');
+            const safeEmail = escapeHTML(profile.email || 'N/A');
+            const safePhone = escapeHTML(profile.phone || 'N/A');
+            const safeServiceName = escapeHTML(service.name || 'N/A');
+            const safeNotes = booking.notes ? escapeHTML(booking.notes) : '';
+            const safeAdminMessage = booking.admin_message ? escapeHTML(booking.admin_message) : '';
+
+            const bookingIdLabel = typeof t === 'function' ? t('admin.bookingId') : 'Booking ID:';
+            const customerLabel = typeof t === 'function' ? t('admin.customer') : 'Customer:';
+            const emailLabel = typeof t === 'function' ? t('admin.email') : 'Email:';
+            const phoneLabel = typeof t === 'function' ? t('admin.phone') : 'Phone:';
+            const serviceLabel = typeof t === 'function' ? t('admin.service') : 'Service:';
+            const dateLabel = typeof t === 'function' ? t('admin.date') : 'Date:';
+            const timeLabel = typeof t === 'function' ? t('admin.time') : 'Time:';
+            const participantsLabel = typeof t === 'function' ? t('admin.participants') : 'Participants:';
+            const totalPriceLabel = typeof t === 'function' ? t('admin.totalPrice') : 'Total Price:';
+            const statusLabel = typeof t === 'function' ? t('admin.status') : 'Status:';
+            const customerNotesLabel = typeof t === 'function' ? t('admin.customerNotes') : 'Customer Notes:';
+            const adminMessageLabel = typeof t === 'function' ? t('admin.adminMessage') : 'Admin Message:';
+            const createdLabel = typeof t === 'function' ? t('admin.created') : 'Created:';
+            const approveText = typeof t === 'function' ? t('admin.approve') : 'Approve';
+            const rejectText = typeof t === 'function' ? t('admin.reject') : 'Reject';
+            const closeText = typeof t === 'function' ? t('common.close') : 'Close';
+            
+            detailsDiv.innerHTML = `
+                <div style="display: grid; gap: 1rem;">
+                    <div><strong>${bookingIdLabel}</strong> ${escapeHTML(booking.id.substring(0, 8))}</div>
+                    <div><strong>${customerLabel}</strong> ${safeFullName}</div>
+                    <div><strong>${emailLabel}</strong> ${safeEmail}</div>
+                    <div><strong>${phoneLabel}</strong> ${safePhone}</div>
+                    <hr>
+                    <div><strong>${serviceLabel}</strong> ${safeServiceName}</div>
+                    <div><strong>${dateLabel}</strong> ${formatDate(booking.booking_date)}</div>
+                    <div><strong>${timeLabel}</strong> ${formatTime(booking.booking_time)}</div>
+                    <div><strong>${participantsLabel}</strong> ${booking.participants}</div>
+                    <div><strong>${totalPriceLabel}</strong> ${formatCurrency(booking.total_price)}</div>
+                    <div><strong>${statusLabel}</strong> <span class="status-badge ${statusClass}">${escapeHTML(booking.status)}</span></div>
+                    ${safeNotes ? `<div><strong>${customerNotesLabel}</strong> ${safeNotes}</div>` : ''}
+                    ${safeAdminMessage ? `<div style="margin-top: 0.5rem; padding: 0.75rem; background: #f0f7ff; border-left: 3px solid #3b82f6; border-radius: 4px;"><strong>${adminMessageLabel}</strong> ${safeAdminMessage}</div>` : ''}
+                    <div><strong>${createdLabel}</strong> ${formatDate(booking.created_at)}</div>
+                </div>
+            `;
+
+            if (booking.status === 'pending') {
+                actionsDiv.innerHTML = `
+                    <button class="btn btn-primary" onclick="handleApproveBooking('${booking.id}')" data-i18n="admin.approve">${approveText}</button>
+                    <button class="btn btn-danger" onclick="handleRejectBooking('${booking.id}')" data-i18n="admin.reject">${rejectText}</button>
+                    <button class="btn btn-secondary" onclick="closeBookingModal()" data-i18n="common.close">${closeText}</button>
+                `;
+            } else {
+                actionsDiv.innerHTML = `
+                    <button class="btn btn-secondary" onclick="closeBookingModal()" data-i18n="common.close">${closeText}</button>
+                `;
+            }
+            
+            // Apply translations to dynamically generated content
+            if (typeof applyTranslations === 'function') {
+                setTimeout(() => applyTranslations(), 100);
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        let pendingBookingAction = null; // Store {bookingId, action: 'approve' or 'reject'}
+
+        function openAdminMessageModal(bookingId, action) {
+            pendingBookingAction = { bookingId, action };
+            const modal = document.getElementById('adminMessageModal');
+            const title = document.getElementById('adminMessageModalTitle');
+            const text = document.getElementById('adminMessageModalText');
+            const input = document.getElementById('adminMessageInput');
+            const confirmBtn = document.getElementById('adminMessageConfirmBtn');
+
+            // Clear previous input
+            input.value = '';
+
+            if (action === 'approve') {
+                title.textContent = typeof t === 'function' ? t('admin.approveBooking') : 'Approve Booking';
+                text.textContent = typeof t === 'function' ? t('admin.provideMessage') : 'Please provide a message for the user (optional but recommended):';
+                confirmBtn.textContent = typeof t === 'function' ? t('admin.approve') : 'Approve';
+                confirmBtn.className = 'btn btn-primary';
+            } else {
+                title.textContent = typeof t === 'function' ? t('admin.rejectBooking') : 'Reject Booking';
+                text.textContent = typeof t === 'function' ? t('admin.provideRejectionReason') : 'Please provide a reason for rejection (optional but recommended):';
+                confirmBtn.textContent = typeof t === 'function' ? t('admin.reject') : 'Reject';
+                confirmBtn.className = 'btn btn-danger';
+            }
+
+            modal.style.display = 'flex';
+            input.focus();
+        }
+
+        function closeAdminMessageModal() {
+            document.getElementById('adminMessageModal').style.display = 'none';
+            pendingBookingAction = null;
+            document.getElementById('adminMessageInput').value = '';
+        }
+
+        async function confirmBookingAction() {
+            if (!pendingBookingAction) return;
+
+            const { bookingId, action } = pendingBookingAction;
+            const message = document.getElementById('adminMessageInput').value.trim();
+
+            const { data, error } = await updateBookingStatus(bookingId, action === 'approve' ? 'approved' : 'rejected', message);
+
+            if (error) {
+                const errorText = action === 'approve' 
+                    ? (typeof t === 'function' ? t('admin.errorApproving') : 'Error approving booking:')
+                    : (typeof t === 'function' ? t('admin.errorRejecting') : 'Error rejecting booking:');
+                alert(`${errorText} ${error.message}`);
+                return;
+            }
+
+            const successText = action === 'approve'
+                ? (typeof t === 'function' ? t('admin.bookingApproved') : 'Booking approved successfully!')
+                : (typeof t === 'function' ? t('admin.bookingRejected') : 'Booking rejected successfully!');
+            alert(successText);
+            closeAdminMessageModal();
+            closeBookingModal();
+            await loadAllBookings();
+        }
+
+        async function handleApproveBooking(bookingId) {
+            openAdminMessageModal(bookingId, 'approve');
+        }
+
+        async function handleRejectBooking(bookingId) {
+            openAdminMessageModal(bookingId, 'reject');
+        }
+
+        // Set up confirm button handler (will be called after DOM loads)
+        setTimeout(() => {
+            const confirmBtn = document.getElementById('adminMessageConfirmBtn');
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', confirmBookingAction);
+            }
+
+            // Allow Enter key to submit (Ctrl+Enter or Cmd+Enter)
+            const messageInput = document.getElementById('adminMessageInput');
+            if (messageInput) {
+                messageInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                        e.preventDefault();
+                        confirmBookingAction();
+                    }
+                });
+            }
+        }, 1000);
+    </script>
+</body>
+
+</html>

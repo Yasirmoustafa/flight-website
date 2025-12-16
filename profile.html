@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - MY FLY CLOUDLY TOURS</title>
+    <!-- Google Fonts - Brand Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Public+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Navigation (will be replaced by navbar.js) -->
+    <nav class="navbar"></nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h1 data-i18n="dashboard.editProfile">Edit Profile</h1>
+                <p class="section-subtitle" data-i18n="profile.subtitle">Update your personal information</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile Edit Form -->
+    <section class="dashboard-content">
+        <div class="container">
+            <div class="dashboard-card fade-in" style="max-width: 600px; margin: 0 auto;">
+                <h2 data-i18n="profile.personalInformation">Personal Information</h2>
+                <form id="profileForm" class="admin-form">
+                    <div class="form-group">
+                        <label for="fullName" data-i18n="auth.fullName">Full Name *</label>
+                        <input type="text" id="fullName" name="fullName" required placeholder="Enter your full name" data-i18n-placeholder="profile.enterFullName">
+                    </div>
+                    <div class="form-group">
+                        <label for="email" data-i18n="auth.email">Email Address</label>
+                        <input type="email" id="email" name="email" readonly
+                            style="background: var(--gray-100); cursor: not-allowed;"
+                            placeholder="your.email@example.com">
+                        <small class="form-help" data-i18n="profile.emailCannotChange">Email cannot be changed</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone" data-i18n="auth.phoneNumber">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+60123456789">
+                    </div>
+                    <div class="form-group">
+                        <label for="nationality" data-i18n="auth.nationality">Nationality *</label>
+                        <select id="nationality" name="nationality" required>
+                            <option value="" data-i18n="auth.selectNationality">Select your nationality</option>
+                            <option value="Malaysian">Malaysian</option>
+                            <option value="Singaporean">Singaporean</option>
+                            <option value="Indonesian">Indonesian</option>
+                            <option value="Thai">Thai</option>
+                            <option value="Filipino">Filipino</option>
+                            <option value="Vietnamese">Vietnamese</option>
+                            <option value="Chinese">Chinese</option>
+                            <option value="Indian">Indian</option>
+                            <option value="British">British</option>
+                            <option value="American">American</option>
+                            <option value="Australian">Australian</option>
+                            <option value="Canadian">Canadian</option>
+                            <option value="German">German</option>
+                            <option value="French">French</option>
+                            <option value="Japanese">Japanese</option>
+                            <option value="South Korean">South Korean</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <small class="form-help" data-i18n="profile.requiredForBooking">Required for booking verification</small>
+                    </div>
+                    <div id="errorMessage" class="error-message" style="display: none;"></div>
+                    <div id="successMessage" class="success-message" style="display: none;"></div>
+                    <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+                        <button type="submit" class="btn btn-primary" style="flex: 1;" data-i18n="profile.saveChanges">Save Changes</button>
+                        <a href="dashboard.html" class="btn btn-outline"
+                            style="flex: 1; text-align: center; text-decoration: none;" data-i18n="common.cancel">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (will be replaced by footer.js) -->
+    <footer class="footer-modern"></footer>
+
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Initialize navbar and footer
+        document.addEventListener('DOMContentLoaded', () => {
+            initRegularNavbar('profile.html');
+            initFooter();
+            applyTranslations(); // Apply translations after content is loaded
+            // Force navbar to be solid
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                navbar.classList.add('scrolled');
+            }
+        });
+    </script>
+    <script>
+        // Initialize GSAP animations
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+
+                // Animate section header
+                const sectionHeader = document.querySelector('.page-header .section-header');
+                if (sectionHeader) {
+                    gsap.set(sectionHeader, { opacity: 0, y: 40 });
+                    gsap.to(sectionHeader, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: 'power3.out'
+                    });
+                }
+
+                // Animate form card
+                const formCard = document.querySelector('.dashboard-card.fade-in');
+                if (formCard) {
+                    gsap.set(formCard, { opacity: 0, y: 30 });
+                    gsap.to(formCard, {
+                        scrollTrigger: {
+                            trigger: formCard,
+                            start: 'top 80%',
+                            toggleActions: 'play none none none'
+                        },
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        ease: 'power2.out'
+                    });
+                }
+            }
+        });
+    </script>
+    <script>
+        // Wait for Supabase to load
+        setTimeout(async () => {
+            // Check authentication
+            const user = getCurrentUser();
+            if (!user) {
+                window.location.href = 'login.html?redirect=profile.html';
+                return;
+            }
+
+            // Load current profile data
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (error) {
+                console.error('Error loading profile:', error);
+            } else if (profile) {
+                // Populate form
+                document.getElementById('fullName').value = profile.full_name || '';
+                document.getElementById('email').value = profile.email || user.email || '';
+                document.getElementById('phone').value = profile.phone || '';
+                document.getElementById('nationality').value = profile.nationality || '';
+            }
+
+            // Handle form submission
+            document.getElementById('profileForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const fullName = formData.get('fullName').trim();
+                const phone = formData.get('phone').trim();
+                const nationality = formData.get('nationality');
+
+                const errorDiv = document.getElementById('errorMessage');
+                const successDiv = document.getElementById('successMessage');
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+
+                // Validation
+                if (!fullName) {
+                    showError(errorDiv, typeof t === 'function' ? t('profile.enterFullNameError') : 'Please enter your full name');
+                    return;
+                }
+
+                if (!nationality) {
+                    showError(errorDiv, typeof t === 'function' ? t('profile.selectNationalityError') : 'Please select your nationality');
+                    return;
+                }
+
+                hideMessage(errorDiv);
+                hideMessage(successDiv);
+                showButtonLoading(submitBtn);
+                submitBtn.disabled = true;
+
+                try {
+                    const { data, error: updateError } = await updateProfile(user.id, {
+                        full_name: fullName,
+                        phone: phone || null,
+                        nationality: nationality
+                    });
+
+                    if (updateError) {
+                        throw updateError;
+                    }
+
+                    hideButtonLoading(submitBtn);
+                    submitBtn.disabled = false;
+                    showSuccess(successDiv, typeof t === 'function' ? t('profile.updateSuccess') : 'Profile updated successfully!');
+
+                    // Update stored user data
+                    const updatedUser = { ...user, full_name: fullName, phone: phone || null, nationality: nationality };
+                    setCurrentUser(updatedUser);
+
+                    // Redirect to dashboard after 1.5 seconds
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } catch (error) {
+                    hideButtonLoading(submitBtn);
+                    submitBtn.disabled = false;
+                    showError(errorDiv, error.message || (typeof t === 'function' ? t('profile.updateError') : 'Failed to update profile. Please try again.'));
+                }
+            });
+        }, 500);
+    </script>
+</body>
+
+</html>

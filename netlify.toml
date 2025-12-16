@@ -1,0 +1,43 @@
+# Netlify configuration file
+# This ensures proper deployment settings
+
+[build]
+  # Since this is a static site, no build command needed
+  # But we can set publish directory explicitly
+  publish = "."
+
+[build.environment]
+  # Node version (if needed for any build tools)
+  NODE_VERSION = "18"
+
+# Headers for security and CORS
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# Headers for JavaScript files (allow CORS for Supabase)
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+# Headers for CSS files
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Headers for images
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+

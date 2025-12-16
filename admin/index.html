@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MY FLY CLOUDLY TOURS</title>
+    <!-- Google Fonts - Brand Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Public+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <!-- Navigation (will be replaced by navbar.js) -->
+    <nav class="navbar"></nav>
+
+    <!-- Admin Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h1 data-i18n="admin.dashboard">Admin Dashboard</h1>
+                <p class="section-subtitle" data-i18n="admin.dashboardSubtitle">Manage bookings, services, and system settings</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Stats -->
+    <section class="admin-stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card fade-in">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <h3 id="totalBookings">0</h3>
+                        <p data-i18n="admin.totalBookings">Total Bookings</p>
+                    </div>
+                </div>
+                <div class="stat-card pending fade-in">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-content">
+                        <h3 id="pendingBookings">0</h3>
+                        <p data-i18n="admin.pendingBookings">Pending Bookings</p>
+                    </div>
+                </div>
+                <div class="stat-card approved fade-in">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-content">
+                        <h3 id="approvedBookings">0</h3>
+                        <p data-i18n="admin.approvedBookings">Approved Bookings</p>
+                    </div>
+                </div>
+                <div class="stat-card fade-in revenue-card" style="flex: 1 1 auto; min-width: 300px;">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-content" style="flex: 1; min-width: 0;">
+                        <h3 id="totalRevenue" style="font-size: clamp(1.25rem, 3.5vw, 2rem); white-space: nowrap;">RM 0
+                        </h3>
+                        <p data-i18n="admin.totalRevenue">Total Revenue</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="admin-actions">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2 data-i18n="admin.quickActions">Quick Actions</h2>
+            </div>
+            <div class="actions-grid">
+                <a href="bookings.html" class="action-card fade-in">
+                    <div class="action-icon">📋</div>
+                    <h3 data-i18n="admin.manageBookings">Manage Bookings</h3>
+                    <p data-i18n="admin.manageBookingsDesc">View, approve, or reject bookings</p>
+                </a>
+                <a href="services.html" class="action-card fade-in">
+                    <div class="action-icon">🛩️</div>
+                    <h3 data-i18n="admin.manageServices">Manage Services</h3>
+                    <p data-i18n="admin.manageServicesDesc">Add, edit, or remove services</p>
+                </a>
+                <a href="users.html" class="action-card fade-in">
+                    <div class="action-icon">👥</div>
+                    <h3 data-i18n="admin.manageUsers">Manage Users</h3>
+                    <p data-i18n="admin.manageUsersDesc">View users and manage admin roles</p>
+                </a>
+                <a href="admins.html" class="action-card fade-in">
+                    <div class="action-icon">👑</div>
+                    <h3 data-i18n="admin.manageAdmins">Manage Admins</h3>
+                    <p data-i18n="admin.manageAdminsDesc">Register new admins or remove admin access</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Bookings -->
+    <section class="recent-bookings">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2 data-i18n="admin.recentBookings">Recent Bookings</h2>
+                <a href="bookings.html" class="btn btn-outline" data-i18n="admin.viewAll">View All</a>
+            </div>
+            <div class="bookings-table-container">
+                <table class="bookings-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="admin.id">ID</th>
+                            <th data-i18n="admin.customer">Customer</th>
+                            <th data-i18n="admin.service">Service</th>
+                            <th data-i18n="admin.date">Date</th>
+                            <th data-i18n="admin.time">Time</th>
+                            <th data-i18n="admin.status">Status</th>
+                            <th data-i18n="admin.actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentBookingsTable">
+                        <!-- Recent bookings will be loaded here -->
+                        <tr>
+                            <td colspan="7" class="text-center" data-i18n="common.loading">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (will be replaced by footer.js) -->
+    <footer class="footer-modern"></footer>
+
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/translations.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script src="../js/navbar.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/bookings.js"></script>
+    <script src="../js/admin.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Initialize navbar and footer
+        document.addEventListener('DOMContentLoaded', () => {
+            initAdminNavbar('index.html');
+            initFooter();
+            applyTranslations(); // Apply translations after content is loaded
+            // Force navbar to be solid
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                navbar.classList.add('scrolled');
+            }
+        });
+    </script>
+    <script>
+        // Initialize GSAP animations
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+
+                // Animate section header
+                const sectionHeader = document.querySelector('.page-header .section-header');
+                if (sectionHeader) {
+                    gsap.set(sectionHeader, { opacity: 0, y: 40 });
+                    gsap.to(sectionHeader, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: 'power3.out'
+                    });
+                }
+
+                // Animate stat cards
+                const statCards = document.querySelectorAll('.stat-card.fade-in');
+                if (statCards.length > 0) {
+                    gsap.set(statCards, {
+                        opacity: 0,
+                        y: 50,
+                        scale: 0.95
+                    });
+
+                    gsap.to(statCards, {
+                        scrollTrigger: {
+                            trigger: '.stats-grid',
+                            start: 'top 80%',
+                            toggleActions: 'play none none none'
+                        },
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.8,
+                        ease: 'power3.out',
+                        stagger: 0.15
+                    });
+                }
+
+                // Animate actions section header
+                const actionsHeader = document.querySelector('.admin-actions .section-header');
+                if (actionsHeader) {
+                    gsap.set(actionsHeader, { opacity: 0, y: 40 });
+                    gsap.to(actionsHeader, {
+                        scrollTrigger: {
+                            trigger: '.admin-actions',
+                            start: 'top 80%',
+                            toggleActions: 'play none none none'
+                        },
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: 'power3.out'
+                    });
+                }
+
+                // Animate action cards
+                const actionCards = document.querySelectorAll('.action-card.fade-in');
+                if (actionCards.length > 0) {
+                    gsap.set(actionCards, {
+                        opacity: 0,
+                        y: 50,
+                        scale: 0.95
+                    });
+
+                    gsap.to(actionCards, {
+                        scrollTrigger: {
+                            trigger: '.actions-grid',
+                            start: 'top 80%',
+                            toggleActions: 'play none none none'
+                        },
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.8,
+                        ease: 'power3.out',
+                        stagger: 0.1
+                    });
+                }
+
+                // Animate recent bookings section
+                const recentBookingsHeader = document.querySelector('.recent-bookings .section-header');
+                if (recentBookingsHeader) {
+                    gsap.set(recentBookingsHeader, { opacity: 0, y: 40 });
+                    gsap.to(recentBookingsHeader, {
+                        scrollTrigger: {
+                            trigger: '.recent-bookings',
+                            start: 'top 80%',
+                            toggleActions: 'play none none none'
+                        },
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: 'power3.out'
+                    });
+                }
+            }
+        });
+    </script>
+    <script>
+        // Wait for Supabase to load
+        setTimeout(async () => {
+            // Check admin authentication
+            const user = getCurrentUser();
+            if (!user || !isAdmin()) {
+                const errorMsg = typeof t === 'function' ? t('admin.accessDenied') : 'Access denied. Admin privileges required.';
+                alert(errorMsg);
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Load dashboard stats
+            await loadDashboardStats();
+
+            // Load recent bookings
+            await loadRecentBookings();
+
+            // Logout handler
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await signOut();
+                    window.location.href = '../index.html';
+                });
+            }
+        }, 1000);
+
+        async function loadDashboardStats() {
+            try {
+                const stats = await getDashboardStats();
+
+                document.getElementById('totalBookings').textContent = stats.totalBookings || 0;
+                document.getElementById('pendingBookings').textContent = stats.pendingBookings || 0;
+                document.getElementById('approvedBookings').textContent = stats.approvedBookings || 0;
+                document.getElementById('totalRevenue').textContent = formatCurrency(stats.totalRevenue || 0);
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadRecentBookings() {
+            try {
+                const { data: bookings, error } = await getRecentBookings(10);
+                const tableBody = document.getElementById('recentBookingsTable');
+
+                if (error) {
+                    console.error('Error loading bookings:', error);
+                    tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Error loading bookings: ' + (error.message || 'Unknown error') + '</td></tr>';
+                    return;
+                }
+
+                if (!bookings || bookings.length === 0) {
+                    const noBookingsText = typeof t === 'function' ? t('admin.noBookingsYet') : 'No bookings yet';
+                    tableBody.innerHTML = `<tr><td colspan="7" class="text-center">${noBookingsText}</td></tr>`;
+                    // Apply translations to dynamically generated content
+                    if (typeof applyTranslations === 'function') {
+                        setTimeout(() => applyTranslations(), 100);
+                    }
+                    return;
+                }
+
+                tableBody.innerHTML = bookings.map(booking => {
+                    // Handle nested objects - Supabase returns them as objects
+                    const service = booking.services || {};
+                    const profile = booking.profiles || {};
+                    const statusClass = getStatusBadgeClass(booking.status);
+                    const shortId = booking.id ? booking.id.substring(0, 8) : 'N/A';
+
+                    return `
+                        <tr>
+                            <td>${shortId}</td>
+                            <td>${profile.full_name || profile.email || 'N/A'}</td>
+                            <td>${service.name || 'N/A'}</td>
+                            <td>${booking.booking_date ? formatDate(booking.booking_date) : 'N/A'}</td>
+                            <td>${booking.booking_time ? formatTime(booking.booking_time) : 'N/A'}</td>
+                            <td><span class="status-badge ${statusClass}">${booking.status || 'pending'}</span></td>
+                            <td>
+                                <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;" onclick="viewBookingDetails('${booking.id}')" data-i18n="admin.view">View</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                // Apply translations to dynamically generated content
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 200);
+                }
+            } catch (error) {
+                console.error('Error loading recent bookings:', error);
+                const errorText = typeof t === 'function' ? t('admin.errorLoadingBookings') : 'Error loading bookings:';
+                document.getElementById('recentBookingsTable').innerHTML = `<tr><td colspan="7" class="text-center">${errorText} ${error.message || 'Unknown error'}</td></tr>`;
+            }
+        }
+
+        async function viewBookingDetails(bookingId) {
+            window.location.href = `bookings.html?booking=${bookingId}`;
+        }
+    </script>
+</body>
+
+</html>

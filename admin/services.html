@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Services - MY FLY CLOUDLY TOURS Admin</title>
+    <!-- Google Fonts - Brand Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Public+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <!-- Navigation (will be replaced by navbar.js) -->
+    <nav class="navbar"></nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h1 data-i18n="admin.manageServices">Manage Services</h1>
+                <p class="section-subtitle" data-i18n="admin.manageServicesSubtitle">Add, edit, or remove flight experience services</p>
+                <div style="margin-top: var(--spacing-lg);">
+                    <button class="btn btn-primary" onclick="openServiceModal()" data-i18n="admin.addNewService">+ Add New Service</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services List -->
+    <section class="admin-content">
+        <div class="container">
+            <div class="services-admin-grid" id="servicesAdminGrid">
+                <!-- Services will be loaded here -->
+                <div class="service-admin-card">
+                    <div class="service-admin-image">
+                        <div class="placeholder-image">🛩️</div>
+                    </div>
+                    <div class="service-admin-content">
+                        <h3>MY FLY CLOUDLY TOURS</h3>
+                        <p>Experience flying an airplane in a real aircraft</p>
+                        <div class="service-admin-meta">
+                            <span class="price">RM 500</span>
+                            <span class="duration">2 hours</span>
+                            <span class="status active">Active</span>
+                        </div>
+                        <div class="service-admin-actions">
+                            <button class="btn btn-outline" onclick="editService('1')">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteService('1')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add/Edit Service Modal -->
+    <div id="serviceModal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2 id="modalTitle" data-i18n="admin.addNewService">Add New Service</h2>
+                <button class="modal-close" onclick="closeServiceModal()">&times;</button>
+            </div>
+            <form id="serviceForm" class="modal-body">
+                <div class="form-group">
+                    <label for="serviceName" data-i18n="admin.serviceName">Service Name *</label>
+                    <input type="text" id="serviceName" name="serviceName" placeholder="e.g., Two Days Pilot" required data-i18n-placeholder="admin.serviceNamePlaceholder">
+                </div>
+                <div class="form-group">
+                    <label for="serviceDescription" data-i18n="admin.description">Description *</label>
+                    <textarea id="serviceDescription" name="serviceDescription" rows="4"
+                        placeholder="Describe the service..." required data-i18n-placeholder="admin.descriptionPlaceholder"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="servicePrice" data-i18n="admin.price">Price (RM) *</label>
+                        <input type="number" id="servicePrice" name="servicePrice" min="0" step="0.01" placeholder="500"
+                            required data-i18n-placeholder="admin.pricePlaceholder">
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceDuration" data-i18n="admin.duration">Duration *</label>
+                        <input type="text" id="serviceDuration" name="serviceDuration" placeholder="e.g., 2 hours"
+                            required data-i18n-placeholder="admin.durationPlaceholder">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="serviceImageFile" data-i18n="admin.serviceImage">Service Image</label>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div>
+                            <label for="serviceImageFile" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-secondary);" data-i18n="admin.uploadImageFile">
+                                Upload Image File
+                            </label>
+                            <input type="file" id="serviceImageFile" name="serviceImageFile" accept="image/*" style="width: 100%; padding: 0.5rem; border: 1px solid var(--gray-300); border-radius: var(--radius-md);">
+                            <small style="display: block; margin-top: 0.25rem; color: var(--text-secondary); font-size: 0.875rem;" data-i18n="admin.imageFileRecommendation">
+                                Recommended: JPG, PNG, or WebP (max 5MB)
+                            </small>
+                        </div>
+                        <div style="text-align: center; color: var(--text-secondary); font-weight: 500;" data-i18n="common.or">OR</div>
+                        <div>
+                            <label for="serviceImage" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-secondary);" data-i18n="admin.imageUrlAlternative">
+                                Image URL (Alternative)
+                            </label>
+                            <input type="url" id="serviceImage" name="serviceImage" placeholder="https://example.com/image.jpg" data-i18n-placeholder="admin.imageUrlPlaceholder">
+                            <small style="display: block; margin-top: 0.25rem; color: var(--text-secondary); font-size: 0.875rem;" data-i18n="admin.imageUrlHelp">
+                                Enter a direct image URL if you prefer not to upload
+                            </small>
+                        </div>
+                    </div>
+                    <div id="imagePreview" style="margin-top: 1rem; display: none;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-secondary);" data-i18n="admin.preview">Preview:</label>
+                        <img id="imagePreviewImg" src="" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: var(--radius-md); border: 1px solid var(--gray-300);">
+                    </div>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="serviceActive" name="serviceActive" checked>
+                        <span data-i18n="admin.activeVisible">Active (visible to customers)</span>
+                    </label>
+                </div>
+                <div id="serviceError" class="error-message" style="display: none;"></div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeServiceModal()" data-i18n="common.cancel">Cancel</button>
+                <button type="submit" form="serviceForm" class="btn btn-primary">
+                    <span class="btn-text" data-i18n="admin.saveService">Save Service</span>
+                    <span class="btn-loader" style="display: none;" data-i18n="common.loading">Saving...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (will be replaced by footer.js) -->
+    <footer class="footer-modern"></footer>
+
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/translations.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script src="../js/navbar.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/services.js"></script>
+    <script src="../js/admin.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Initialize navbar and footer
+        document.addEventListener('DOMContentLoaded', () => {
+            initFooter();
+            initAdminNavbar('services.html');
+            applyTranslations(); // Apply translations after content is loaded
+            // Force navbar to be solid
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                navbar.classList.add('scrolled');
+            }
+        });
+    </script>
+    <script>
+        // Initialize GSAP animations
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+
+                // Animate section header
+                const sectionHeader = document.querySelector('.page-header .section-header');
+                if (sectionHeader) {
+                    gsap.set(sectionHeader, { opacity: 0, y: 40 });
+                    gsap.to(sectionHeader, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: 'power3.out'
+                    });
+                }
+            }
+        });
+    </script>
+    <script>
+        let editingServiceId = null;
+        let allServices = [];
+
+        // Image upload function for Supabase Storage
+        async function uploadServiceImage(file) {
+            try {
+                if (!supabase) {
+                    throw new Error('Supabase not initialized');
+                }
+
+                // Validate file
+                if (!file) {
+                    throw new Error('No file provided');
+                }
+
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+                if (!validTypes.includes(file.type)) {
+                    throw new Error('Invalid file type. Please upload a JPG, PNG, GIF, WebP, or SVG image.');
+                }
+
+                // Validate file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    throw new Error('File size too large. Maximum size is 5MB.');
+                }
+
+                // Generate unique filename
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+                const filePath = `services/${fileName}`;
+
+                // Upload to Supabase Storage
+                const { data, error } = await supabase.storage
+                    .from('service-images')
+                    .upload(filePath, file, {
+                        cacheControl: '3600',
+                        upsert: false
+                    });
+
+                if (error) {
+                    console.error('Upload error:', error);
+                    
+                    // Provide helpful error messages
+                    if (error.message && error.message.includes('Bucket not found')) {
+                        throw new Error('Storage bucket "service-images" not found. Please create it in Supabase Dashboard → Storage.');
+                    } else if (error.message && error.message.includes('new row violates row-level security')) {
+                        throw new Error('Permission denied. Make sure you are logged in as an admin and storage policies are set up correctly.');
+                    } else {
+                        throw new Error(error.message || 'Failed to upload image. Please check your storage configuration.');
+                    }
+                }
+
+                // Get public URL
+                const { data: urlData } = supabase.storage
+                    .from('service-images')
+                    .getPublicUrl(filePath);
+
+                if (!urlData || !urlData.publicUrl) {
+                    throw new Error('Failed to get image URL after upload');
+                }
+
+                return urlData.publicUrl;
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                throw error;
+            }
+        }
+
+        // Image preview functionality
+        function setupImagePreview() {
+            const fileInput = document.getElementById('serviceImageFile');
+            const urlInput = document.getElementById('serviceImage');
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('imagePreviewImg');
+
+            if (fileInput) {
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Validate file size (max 5MB)
+                        if (file.size > 5 * 1024 * 1024) {
+                            alert('Image file is too large. Maximum size is 5MB.');
+                            e.target.value = '';
+                            return;
+                        }
+                        
+                        // Clear URL input when file is selected
+                        if (urlInput) urlInput.value = '';
+                        
+                        // Show preview
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImg.src = e.target.result;
+                            preview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        preview.style.display = 'none';
+                    }
+                });
+            }
+
+            if (urlInput) {
+                urlInput.addEventListener('input', function(e) {
+                    const url = e.target.value.trim();
+                    if (url && isValidImageUrl(url)) {
+                        // Clear file input when URL is entered
+                        if (fileInput) fileInput.value = '';
+                        previewImg.src = url;
+                        preview.style.display = 'block';
+                    } else if (!url) {
+                        preview.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        function isValidImageUrl(url) {
+            return /\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i.test(url) || url.startsWith('data:image') || url.startsWith('http');
+        }
+
+        // Wait for Supabase to load
+        setTimeout(async () => {
+            setupImagePreview();
+            // Check admin authentication
+            const user = getCurrentUser();
+            if (!user || !isAdmin()) {
+                const errorMsg = typeof t === 'function' ? t('admin.accessDenied') : 'Access denied. Admin privileges required.';
+                alert(errorMsg);
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Show loading state
+            const grid = document.getElementById('servicesAdminGrid');
+            if (grid) {
+                const loadingText = typeof t === 'function' ? t('admin.loadingServices') : 'Loading services...';
+                grid.innerHTML = `<div style="text-align: center; padding: 2rem;"><p>${loadingText}</p></div>`;
+            }
+
+            // Load all services (including inactive)
+            await loadAllServices();
+
+            // Handle form submission
+            document.getElementById('serviceForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await saveService();
+            });
+
+            // Logout handler
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await signOut();
+                    window.location.href = '../index.html';
+                });
+            }
+        }, 500);
+
+        async function loadAllServices() {
+            try {
+                // Get all services (we need to modify getAllServices to get inactive too, or create a new function)
+                // For now, let's get all services from Supabase directly
+                if (!supabase) {
+                    console.error('Supabase not initialized');
+                    const grid = document.getElementById('servicesAdminGrid');
+                    if (grid) {
+                        grid.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--text-secondary);">Supabase not initialized. Please check your configuration.</p>';
+                    }
+                    return;
+                }
+
+                const { data: services, error } = await supabase
+                    .from('services')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error loading services:', error);
+                    const grid = document.getElementById('servicesAdminGrid');
+                    if (grid) {
+                        const errorText = typeof t === 'function' ? t('admin.errorLoadingServices') : 'Error loading services:';
+                        grid.innerHTML = `<p style="text-align: center; padding: 2rem; color: var(--danger-color);">${errorText} ${error.message}</p>`;
+                        if (typeof applyTranslations === 'function') {
+                            setTimeout(() => applyTranslations(), 100);
+                        }
+                    }
+                    return;
+                }
+
+                allServices = services || [];
+                renderServices();
+            } catch (error) {
+                console.error('Error loading services:', error);
+                const grid = document.getElementById('servicesAdminGrid');
+                if (grid) {
+                    const errorText = typeof t === 'function' ? t('admin.errorLoadingServices') : 'Error loading services:';
+                    grid.innerHTML = `<p style="text-align: center; padding: 2rem; color: var(--danger-color);">${errorText} ${error.message || 'Unknown error'}</p>`;
+                    if (typeof applyTranslations === 'function') {
+                        setTimeout(() => applyTranslations(), 100);
+                    }
+                }
+            }
+        }
+
+        function renderServices() {
+            const grid = document.getElementById('servicesAdminGrid');
+            if (!grid) return;
+
+            if (allServices.length === 0) {
+                const noServicesText = typeof t === 'function' ? t('admin.noServicesFound') : 'No services found. Click "Add New Service" to create one.';
+                grid.innerHTML = `<p>${noServicesText}</p>`;
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 100);
+                }
+                return;
+            }
+
+            // Clear and rebuild with event delegation
+            grid.innerHTML = '';
+
+            allServices.forEach(service => {
+                // Default images for services without images
+                const defaultImages = [
+                    'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80',
+                    'https://images.unsplash.com/photo-1540962351504-03099e0a754b?w=800&q=80',
+                    'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=800&q=80',
+                    'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800&q=80'
+                ];
+
+                // Use service image if available, otherwise use default based on index
+                let imageUrl = service.image_url;
+                if (!imageUrl || imageUrl.trim() === '' || imageUrl === 'null' || imageUrl === 'undefined') {
+                    const index = allServices.indexOf(service);
+                    imageUrl = defaultImages[index % defaultImages.length];
+                }
+
+                // Sanitize service data to prevent XSS
+                const safeName = escapeHTML(service.name);
+                const safeDescription = escapeHTML(service.description);
+                const safeDuration = escapeHTML(service.duration);
+                const safeImageUrl = escapeHTML(imageUrl);
+                const safeServiceId = escapeHTML(service.id);
+
+                const card = document.createElement('div');
+                card.className = 'service-admin-card fade-in';
+
+                // Sanitize image URL for src attribute
+                const img = document.createElement('img');
+                img.src = safeImageUrl;
+                img.alt = safeName;
+                img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+                img.loading = 'lazy';
+                img.onerror = function () {
+                    this.onerror = null;
+                    this.src = defaultImages[0];
+                    this.style.display = 'block';
+                    if (this.nextElementSibling) this.nextElementSibling.style.display = 'none';
+                };
+                img.onload = function () {
+                    if (this.nextElementSibling) this.nextElementSibling.style.display = 'none';
+                };
+
+                const imageDiv = document.createElement('div');
+                imageDiv.className = 'service-admin-image';
+                imageDiv.appendChild(img);
+
+                const placeholder = document.createElement('div');
+                placeholder.className = 'placeholder-image';
+                placeholder.style.display = service.image_url ? 'none' : 'flex';
+                placeholder.textContent = '🛩️';
+                imageDiv.appendChild(placeholder);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'service-admin-content';
+
+                const h3 = document.createElement('h3');
+                h3.textContent = safeName;
+                contentDiv.appendChild(h3);
+
+                const p = document.createElement('p');
+                p.textContent = safeDescription;
+                contentDiv.appendChild(p);
+
+                const metaDiv = document.createElement('div');
+                metaDiv.className = 'service-admin-meta';
+                const activeText = typeof t === 'function' ? t('admin.active') : 'Active';
+                const inactiveText = typeof t === 'function' ? t('admin.inactive') : 'Inactive';
+                metaDiv.innerHTML = `
+                    <span class="price">${formatCurrency(service.price)}</span>
+                    <span class="duration">${safeDuration}</span>
+                    <span class="status ${service.active ? 'active' : ''}">${service.active ? activeText : inactiveText}</span>
+                `;
+                contentDiv.appendChild(metaDiv);
+
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'service-admin-actions';
+
+                const editBtn = document.createElement('button');
+                editBtn.className = 'action-btn-icon edit-btn';
+                editBtn.setAttribute('data-service-id', safeServiceId);
+                editBtn.title = typeof t === 'function' ? t('common.edit') : 'Edit';
+                editBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>`;
+                editBtn.addEventListener('click', () => editService(safeServiceId));
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'action-btn-icon delete-btn';
+                deleteBtn.setAttribute('data-service-id', safeServiceId);
+                deleteBtn.title = typeof t === 'function' ? t('common.delete') : 'Delete';
+                deleteBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>`;
+                deleteBtn.addEventListener('click', () => deleteServiceHandler(safeServiceId));
+
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = `btn ${service.active ? 'btn-secondary' : 'btn-primary'}`;
+                toggleBtn.setAttribute('data-service-id', safeServiceId);
+                toggleBtn.setAttribute('data-active', service.active);
+                toggleBtn.style.flex = '1';
+                const activateText = typeof t === 'function' ? t('admin.activate') : 'Activate';
+                const deactivateText = typeof t === 'function' ? t('admin.deactivate') : 'Deactivate';
+                toggleBtn.textContent = service.active ? deactivateText : activateText;
+                toggleBtn.addEventListener('click', () => toggleServiceStatusHandler(safeServiceId, !service.active));
+
+                actionsDiv.appendChild(editBtn);
+                actionsDiv.appendChild(deleteBtn);
+                actionsDiv.appendChild(toggleBtn);
+                contentDiv.appendChild(actionsDiv);
+
+                card.appendChild(imageDiv);
+                card.appendChild(contentDiv);
+                grid.appendChild(card);
+            });
+            
+            // Apply translations to dynamically generated content
+            if (typeof applyTranslations === 'function') {
+                setTimeout(() => applyTranslations(), 200);
+            }
+
+            // Animate service cards after rendering
+            setTimeout(() => {
+                if (typeof gsap !== 'undefined') {
+                    const cards = document.querySelectorAll('.service-admin-card.fade-in');
+                    if (cards.length > 0) {
+                        gsap.set(cards, { opacity: 0, y: 30, scale: 0.95 });
+                        gsap.to(cards, {
+                            opacity: 1,
+                            y: 0,
+                            scale: 1,
+                            duration: 0.6,
+                            ease: 'power2.out',
+                            stagger: 0.1
+                        });
+                    }
+                }
+            }, 100);
+        }
+
+        async function openServiceModal(serviceId = null) {
+            editingServiceId = serviceId;
+            const modal = document.getElementById('serviceModal');
+            const title = document.getElementById('modalTitle');
+            const form = document.getElementById('serviceForm');
+            const errorDiv = document.getElementById('serviceError');
+
+            hideMessage(errorDiv);
+
+            if (serviceId) {
+                title.textContent = typeof t === 'function' ? t('admin.editService') : 'Edit Service';
+                // Apply translations to modal title
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 100);
+                }
+                // Find service in loaded services
+                let service = allServices.find(s => s.id === serviceId);
+
+                // If not found, fetch it from database
+                if (!service) {
+                    const { data, error } = await getServiceById(serviceId);
+                    if (error || !data) {
+                        const errorMsg = typeof t === 'function' ? t('admin.errorLoadingService') : 'Error loading service:';
+                        showError(errorDiv, `${errorMsg} ${error?.message || 'Service not found'}`);
+                        return;
+                    }
+                    service = data;
+                }
+
+                if (service) {
+                    document.getElementById('serviceName').value = service.name || '';
+                    document.getElementById('serviceDescription').value = service.description || '';
+                    document.getElementById('servicePrice').value = service.price || '';
+                    document.getElementById('serviceDuration').value = service.duration || '';
+                    document.getElementById('serviceImage').value = service.image_url || '';
+                    document.getElementById('serviceActive').checked = service.active !== false;
+                    
+                    // Clear file input and show current image preview
+                    const fileInput = document.getElementById('serviceImageFile');
+                    if (fileInput) fileInput.value = '';
+                    
+                    const preview = document.getElementById('imagePreview');
+                    const previewImg = document.getElementById('imagePreviewImg');
+                    if (service.image_url && preview && previewImg) {
+                        previewImg.src = service.image_url;
+                        preview.style.display = 'block';
+                    } else if (preview) {
+                        preview.style.display = 'none';
+                    }
+                } else {
+                    const errorMsg = typeof t === 'function' ? t('admin.serviceNotFound') : 'Service not found';
+                    showError(errorDiv, errorMsg);
+                    return;
+                }
+            } else {
+                title.textContent = typeof t === 'function' ? t('admin.addNewService') : 'Add New Service';
+                // Apply translations to modal title
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 100);
+                }
+                form.reset();
+                document.getElementById('serviceActive').checked = true;
+                
+                // Clear image preview
+                const preview = document.getElementById('imagePreview');
+                if (preview) preview.style.display = 'none';
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeServiceModal() {
+            document.getElementById('serviceModal').style.display = 'none';
+            editingServiceId = null;
+            document.getElementById('serviceForm').reset();
+            
+            // Clear image preview
+            const preview = document.getElementById('imagePreview');
+            const fileInput = document.getElementById('serviceImageFile');
+            if (preview) preview.style.display = 'none';
+            if (fileInput) fileInput.value = '';
+            
+            hideMessage(document.getElementById('serviceError'));
+        }
+
+        async function editService(serviceId) {
+            await openServiceModal(serviceId);
+        }
+
+        async function saveService() {
+            const form = document.getElementById('serviceForm');
+            if (!form) {
+                console.error('Service form not found');
+                return;
+            }
+
+            const errorDiv = document.getElementById('serviceError');
+            // Submit button is in modal-footer, not inside form
+            const modal = document.getElementById('serviceModal');
+            const submitBtn = modal ? modal.querySelector('button[type="submit"]') : null;
+
+            // Handle image upload or URL
+            let imageUrl = null;
+            const fileInput = document.getElementById('serviceImageFile');
+            const urlInput = document.getElementById('serviceImage');
+
+            // Priority: File upload > URL input
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                // Upload file to Supabase Storage
+                try {
+                    if (submitBtn) showButtonLoading(submitBtn);
+                    if (errorDiv) hideMessage(errorDiv);
+                    
+                    imageUrl = await uploadServiceImage(fileInput.files[0]);
+                    console.log('Image uploaded successfully:', imageUrl);
+                } catch (uploadError) {
+                    console.error('Upload error:', uploadError);
+                    if (submitBtn) hideButtonLoading(submitBtn);
+                    const errorMsg = uploadError.message || uploadError.toString() || 'Unknown error';
+                    if (errorDiv) {
+                        showError(errorDiv, 'Failed to upload image: ' + errorMsg);
+                    } else {
+                        alert('Failed to upload image: ' + errorMsg);
+                    }
+                    return;
+                }
+            } else if (urlInput && urlInput.value.trim()) {
+                // Use URL if provided
+                imageUrl = urlInput.value.trim();
+            }
+            // If editing and no new image provided, keep existing image_url
+            else if (editingServiceId) {
+                // Keep existing image - will be handled in updateService
+                imageUrl = null; // null means don't update image_url
+            }
+
+            const serviceData = {
+                name: document.getElementById('serviceName').value.trim(),
+                description: document.getElementById('serviceDescription').value.trim(),
+                price: document.getElementById('servicePrice').value,
+                duration: document.getElementById('serviceDuration').value.trim(),
+                active: document.getElementById('serviceActive').checked
+            };
+
+            // Only include image_url if a new image was provided
+            // If editing and no new image, image_url won't be updated (keeps existing)
+            if (imageUrl !== null) {
+                serviceData.image_url = imageUrl;
+            }
+
+            // Validation
+            if (!serviceData.name || !serviceData.description || !serviceData.price || !serviceData.duration) {
+                if (errorDiv) showError(errorDiv, 'Please fill in all required fields');
+                return;
+            }
+
+            if (parseFloat(serviceData.price) < 0) {
+                if (errorDiv) showError(errorDiv, 'Price must be a positive number');
+                return;
+            }
+
+            if (submitBtn && !submitBtn.disabled) {
+                showButtonLoading(submitBtn);
+            }
+            if (errorDiv) {
+                hideMessage(errorDiv);
+            }
+
+            try {
+                let result;
+                if (editingServiceId) {
+                    result = await updateService(editingServiceId, serviceData);
+                } else {
+                    // For new services, image_url is required if not provided
+                    if (!serviceData.image_url) {
+                        serviceData.image_url = null; // Allow services without images
+                    }
+                    result = await createService(serviceData);
+                }
+
+                if (result.error) {
+                    if (submitBtn) hideButtonLoading(submitBtn);
+                    if (errorDiv) showError(errorDiv, result.error.message || 'Failed to save service');
+                    return;
+                }
+
+                // Success
+                if (submitBtn) hideButtonLoading(submitBtn);
+                closeServiceModal();
+                await loadAllServices();
+                const successMsg = editingServiceId 
+                    ? (typeof t === 'function' ? t('admin.serviceUpdated') : 'Service updated successfully!')
+                    : (typeof t === 'function' ? t('admin.serviceCreated') : 'Service created successfully!');
+                alert(successMsg);
+            } catch (error) {
+                if (submitBtn) hideButtonLoading(submitBtn);
+                if (errorDiv) showError(errorDiv, error.message || 'An error occurred');
+            }
+        }
+
+        async function deleteServiceHandler(serviceId) {
+            if (!confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
+                return;
+            }
+
+            const { data, error } = await deleteService(serviceId);
+            if (error) {
+                alert('Error deleting service: ' + error.message);
+                console.error('Delete error:', error);
+                return;
+            }
+
+            alert('Service deleted successfully!');
+            await loadAllServices();
+        }
+
+        async function toggleServiceStatusHandler(serviceId, active) {
+            const { data, error } = await toggleServiceStatus(serviceId, active);
+            if (error) {
+                const errorMsg = typeof t === 'function' ? t('admin.errorUpdatingStatus') : 'Error updating service status:';
+                alert(`${errorMsg} ${error.message}`);
+                console.error('Toggle status error:', error);
+                return;
+            }
+
+            await loadAllServices();
+        }
+    </script>
+</body>
+
+</html>

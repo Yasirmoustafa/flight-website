@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - MY FLY CLOUDLY TOURS</title>
+    <!-- Google Fonts - Brand Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Public+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css?v=2">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+
+<body>
+    <!-- Navigation (will be replaced by navbar.js) -->
+    <nav class="navbar"></nav>
+
+    <!-- Hero Header -->
+    <section class="about-hero fade-in">
+        <div class="about-hero-background"></div>
+        <div class="container">
+            <div class="about-hero-content">
+                <h1 class="about-hero-title" data-i18n="about.title">About MY FLY CLOUDLY TOURS</h1>
+                <p class="about-hero-subtitle" data-i18n="about.subtitle">Your trusted partner for unforgettable flight
+                    experiences</p>
+                <div class="about-hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" data-target="10000">0</div>
+                        <div class="stat-label" data-i18n="about.happyCustomers">Happy Customers</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-target="15">0</div>
+                        <div class="stat-label" data-i18n="about.yearsExperience">Years Experience</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-target="100">0</div>
+                        <div class="stat-label" data-i18n="about.safetyRecord">% Safety Record</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="about-mission-section">
+        <div class="container">
+            <div class="mission-grid">
+                <div class="mission-content fade-in">
+                    <span class="section-label" data-i18n="about.ourMission">Our Mission</span>
+                    <h2 class="section-title" data-i18n="about.elevatingAviation">Elevating Aviation Experiences</h2>
+                    <p class="mission-text" data-i18n="about.missionText1">We are an organization dedicated to the
+                        promotion and encouragement of sport
+                        aviation in a safe environment. Our mission is to create great customer experiences by
+                        delivering our promises and providing the highest standard of reliable services.</p>
+                    <p class="mission-text" data-i18n="about.missionText2">From two-days pilot experiences to skydiving
+                        adventures, helicopter rides,
+                        and flight simulator training, we offer a wide range of aviation experiences that cater to all
+                        levels of adventure seekers.</p>
+                </div>
+                <div class="mission-image fade-in">
+                    <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&q=80"
+                        alt="Aviation Mission" loading="lazy">
+                    <div class="image-overlay"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="about-features-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-label" data-i18n="about.whyChooseUs">Why Choose Us</span>
+                <h2 class="section-title" data-i18n="about.excellenceInFlight">Excellence in Every Flight</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                        </svg>
+                    </div>
+                    <h3 data-i18n="about.professionalInstructors">Professional Instructors</h3>
+                    <p data-i18n="about.professionalInstructorsDesc">Certified and experienced instructors dedicated to
+                        your safety and learning experience.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h3 data-i18n="about.safetyFirst">Safety First</h3>
+                    <p data-i18n="about.safetyFirstDesc">Safety-first approach in all activities with state-of-the-art
+                        equipment and facilities.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h3 data-i18n="about.unforgettableExperiences">Unforgettable Experiences</h3>
+                    <p data-i18n="about.unforgettableExperiencesDesc">Memorable adventures for all ages, from first-time
+                        flyers to experienced aviators.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                    </div>
+                    <h3 data-i18n="about.flexibleBooking">Flexible Booking</h3>
+                    <p data-i18n="about.flexibleBookingDesc">Easy online booking system with flexible scheduling options
+                        to fit your needs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="about-contact-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-label" data-i18n="about.getInTouch">Get in Touch</span>
+                <h2 class="section-title" data-i18n="about.visitOurOffice">Visit Our Office</h2>
+            </div>
+            <div class="contact-grid-modern">
+                <div class="contact-card-modern fade-in">
+                    <div class="contact-icon-modern">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                    </div>
+                    <h3 data-i18n="about.ourOffice">Our Office</h3>
+                    <p>EduStep Global Solutions Ltd.<br>
+                        (LL21756)<br></p>
+                </div>
+                <div class="contact-card-modern fade-in">
+                    <div class="contact-icon-modern">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
+                        </svg>
+                    </div>
+                    <h3 data-i18n="about.phone">Phone</h3>
+                    <p>+60 11-6068 3066</p>
+                </div>
+                <div class="contact-card-modern fade-in">
+                    <div class="contact-icon-modern">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+                        </svg>
+                    </div>
+                    <h3 data-i18n="about.whatsapp">WhatsApp</h3>
+                    <p>+60 11-6068 3066</p>
+                    <a href="https://wa.me/601160683066" class="btn btn-primary-modern" target="_blank"
+                        data-i18n="about.chatOnWhatsApp">Chat on
+                        WhatsApp</a>
+                </div>
+                <div class="contact-card-modern fade-in">
+                    <div class="contact-icon-modern">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                    </div>
+                    <h3 data-i18n="about.email">Email</h3>
+                    <p>info@edustep.com.my
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business Hours & Map Section -->
+    <section class="about-info-section">
+        <div class="container">
+            <div class="info-grid">
+                <div class="hours-card-modern fade-in">
+                    <div class="section-header-small">
+                        <span class="section-label" data-i18n="about.businessHours">Business Hours</span>
+                        <h3 data-i18n="about.whenWeAreOpen">When We're Open</h3>
+                    </div>
+                    <div class="hours-list-modern">
+                        <div class="hours-item-modern">
+                            <span class="day-modern" data-i18n="about.mondayFriday">Monday - Friday</span>
+                            <span class="time-modern">9:00 AM - 5:00 PM</span>
+                        </div>
+                        <div class="hours-item-modern">
+                            <span class="day-modern" data-i18n="about.saturday">Saturday</span>
+                            <span class="time-modern">9:00 AM - 2:00 PM</span>
+                        </div>
+                        <div class="hours-item-modern">
+                            <span class="day-modern" data-i18n="about.sunday">Sunday</span>
+                            <span class="time-modern closed" data-i18n="about.closed">Closed</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="map-card-modern fade-in">
+                    <div class="section-header-small">
+                        <span class="section-label" data-i18n="about.location">Location</span>
+                        <h3 data-i18n="about.findUs">Find Us</h3>
+                    </div>
+                    <div class="map-container-modern">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d53813.51208828736!2d101.64220951415086!3d2.904782579267593!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cdb6fea34fb215%3A0xef241a662425814e!2sGLOBAL%20EDUCATIONAL%20SOLUTIONS-MALAYSIA%20(Global%20Inst%20Edu%20Solutions%20Sdn.Bhd)!5e0!3m2!1sen!2smy!4v1765849184233!5m2!1sen!2smy"
+                            width="100%" height="100%" style="border:0; border-radius: var(--radius-lg);"
+                            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/601160683066" class="whatsapp-button" target="_blank" aria-label="Contact us on WhatsApp">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.375a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+        </svg>
+        <span data-i18n="home.contactUs">Contact Us</span>
+    </a>
+
+    <!-- Footer (will be replaced by footer.js) -->
+    <footer class="footer-modern"></footer>
+
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Initialize navbar and footer
+        document.addEventListener('DOMContentLoaded', () => {
+            initRegularNavbar('about.html');
+            initFooter();
+
+            // Register GSAP ScrollTrigger plugin
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Refresh ScrollTrigger after page load to ensure proper calculations
+            ScrollTrigger.refresh();
+
+            // Set initial states for all animated elements
+            gsap.set('.fade-in', { opacity: 0, y: 40 });
+            gsap.set('.about-hero-title', { opacity: 0, y: 30 });
+            gsap.set('.about-hero-subtitle', { opacity: 0, y: 20 });
+            gsap.set('.stat-item', { opacity: 0, y: 20 });
+            gsap.set('.mission-content', { opacity: 0, x: -30 });
+            gsap.set('.mission-image', { opacity: 0, x: 30 });
+            gsap.set('.feature-card', { opacity: 0, y: 30 });
+
+            // Animate hero section immediately (no scroll trigger)
+            gsap.to('.about-hero-title', {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: 'power3.out'
+            });
+
+            gsap.to('.about-hero-subtitle', {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                delay: 0.2,
+                ease: 'power3.out'
+            });
+
+            gsap.to('.stat-item', {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                delay: 0.4,
+                stagger: 0.1,
+                ease: 'power3.out'
+            });
+
+            // Animate sections on scroll with earlier trigger point
+            gsap.utils.toArray('.fade-in').forEach((element, index) => {
+                // Skip elements that are already being animated separately
+                if (element.classList.contains('mission-content') ||
+                    element.classList.contains('mission-image') ||
+                    element.classList.contains('feature-card')) {
+                    return;
+                }
+
+                gsap.to(element, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: element,
+                        start: 'top 90%',
+                        end: 'top 50%',
+                        toggleActions: 'play none none none',
+                        once: true // Only animate once
+                    }
+                });
+            });
+
+            // Animate mission grid
+            gsap.to('.mission-content', {
+                opacity: 1,
+                x: 0,
+                duration: 0.8,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '.mission-grid',
+                    start: 'top 85%',
+                    toggleActions: 'play none none none',
+                    once: true
+                }
+            });
+
+            gsap.to('.mission-image', {
+                opacity: 1,
+                x: 0,
+                duration: 0.8,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '.mission-grid',
+                    start: 'top 85%',
+                    toggleActions: 'play none none none',
+                    once: true
+                }
+            });
+
+            // Animate feature cards
+            gsap.to('.feature-card', {
+                opacity: 1,
+                y: 0,
+                duration: 0.7,
+                stagger: 0.1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '.features-grid',
+                    start: 'top 85%',
+                    toggleActions: 'play none none none',
+                    once: true
+                }
+            });
+
+            // Counter animation for stats
+            let countersAnimated = false;
+            function animateCounter(element) {
+                const target = parseInt(element.getAttribute('data-target'));
+                const duration = 1500;
+                const increment = target / (duration / 16);
+                let current = 0;
+
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        element.textContent = target + (element.getAttribute('data-target') === '100' ? '%' : '+');
+                        clearInterval(timer);
+                    } else {
+                        element.textContent = Math.floor(current) + (element.getAttribute('data-target') === '100' ? '%' : '+');
+                    }
+                }, 16);
+            }
+
+            // Trigger counter animation when stats come into view
+            ScrollTrigger.create({
+                trigger: '.about-hero-stats',
+                start: 'top 90%',
+                onEnter: () => {
+                    if (!countersAnimated) {
+                        document.querySelectorAll('.stat-number').forEach(animateCounter);
+                        countersAnimated = true;
+                    }
+                },
+                once: true
+            });
+
+            // Fallback: Ensure all elements are visible after 3 seconds if GSAP fails
+            setTimeout(() => {
+                document.querySelectorAll('.fade-in').forEach(el => {
+                    if (window.getComputedStyle(el).opacity === '0') {
+                        el.style.opacity = '1';
+                        el.style.transform = 'none';
+                    }
+                });
+            }, 3000);
+
+            // Refresh ScrollTrigger on window resize
+            window.addEventListener('resize', () => {
+                ScrollTrigger.refresh();
+            });
+        });
+    </script>
+</body>
+
+</html>

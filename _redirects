@@ -1,0 +1,11 @@
+# Netlify redirects file
+# This ensures all routes work correctly
+
+# Force HTTPS (redirect HTTP to HTTPS)
+http://*    https://*    301
+
+# Handle 404 errors - redirect to index.html only for non-existent files
+# This helps with direct URL access
+/404.html    /index.html    404
+
+

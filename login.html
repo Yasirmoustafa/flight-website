@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MY FLY CLOUDLY TOURS</title>
+    <!-- Google Fonts - Brand Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Public+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="auth-page">
+    <!-- Navigation (will be replaced by navbar.js) -->
+    <nav class="navbar"></nav>
+
+    <!-- Animated Sky Background -->
+    <div class="sky-background">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+        <div class="airplane-icon">✈️</div>
+    </div>
+
+    <!-- Login Form -->
+    <section class="auth-section">
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-card modern-auth-card">
+                    <div class="auth-header">
+                        <div class="auth-icon">🛩️</div>
+                        <h1 data-i18n="auth.welcomeBack">Welcome Back</h1>
+                        <p data-i18n="auth.loginDescription">Login to your account to book your flight experience</p>
+                    </div>
+                    <form id="loginForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="email" data-i18n="auth.email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password" data-i18n="auth.password">Password</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="password" name="password" placeholder="Enter your password"
+                                    required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')"
+                                    aria-label="Toggle password visibility">
+                                    <span class="eye-icon">👁️</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="remember">
+                                <span data-i18n="auth.rememberMe">Remember me</span>
+                            </label>
+                        </div>
+                        <div id="errorMessage" class="error-message" style="display: none;"></div>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <span class="btn-text" data-i18n="auth.login">Login</span>
+                            <span class="btn-loader" style="display: none;" data-i18n="common.loading">Loading...</span>
+                        </button>
+                        
+                        <!-- Divider -->
+                        <div class="auth-divider">
+                            <span data-i18n="common.or">or</span>
+                        </div>
+                        
+                        <!-- Google Sign In Button -->
+                        <button type="button" class="btn btn-google btn-block" onclick="handleGoogleSignIn()">
+                            <svg width="18" height="18" viewBox="0 0 18 18" style="margin-right: 8px;">
+                                <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+                                <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.96-2.184l-2.908-2.258c-.806.54-1.837.86-3.052.86-2.347 0-4.33-1.584-5.04-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+                                <path fill="#FBBC05" d="M3.96 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.348 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.003-2.332z"/>
+                                <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.96 7.293C4.67 5.163 6.653 3.58 9 3.58z"/>
+                            </svg>
+                            <span data-i18n="auth.continueWithGoogle">Continue with Google</span>
+                        </button>
+                    </form>
+                    <div class="auth-footer">
+                        <p><span data-i18n="auth.dontHaveAccount">Don't have an account?</span> <a href="signup.html" data-i18n="auth.signUpHere">Sign up here</a></p>
+                        <p style="margin-top: 1rem;"><a href="forgot-password.html" data-i18n="auth.forgotPassword">Forgot your password?</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (will be replaced by footer.js) -->
+    <footer class="footer-modern"></footer>
+
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+            // Initialize navbar and footer
+        document.addEventListener('DOMContentLoaded', () => {
+            initRegularNavbar('login.html');
+            initFooter();
+            applyTranslations(); // Apply translations after content is loaded
+            // Force navbar to be solid
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                navbar.classList.add('scrolled');
+            }
+
+            // Animate auth card entrance
+            if (typeof gsap !== 'undefined') {
+                const authCard = document.querySelector('.modern-auth-card');
+                if (authCard) {
+                    gsap.set(authCard, { opacity: 0, y: 50, scale: 0.9 });
+                    gsap.to(authCard, {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.8,
+                        ease: 'back.out(1.7)',
+                        delay: 0.2
+                    });
+                }
+
+                // Animate form inputs
+                const inputs = document.querySelectorAll('.form-group input');
+                inputs.forEach((input, index) => {
+                    gsap.set(input, { opacity: 0, x: -20 });
+                    gsap.to(input, {
+                        opacity: 1,
+                        x: 0,
+                        duration: 0.5,
+                        delay: 0.4 + (index * 0.1),
+                        ease: 'power2.out'
+                    });
+                });
+            }
+        });
+
+        // Password toggle function
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const toggleBtn = input.nextElementSibling;
+            const eyeIcon = toggleBtn.querySelector('.eye-icon');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeIcon.textContent = '🙈';
+                toggleBtn.setAttribute('aria-label', 'Hide password');
+            } else {
+                input.type = 'password';
+                eyeIcon.textContent = '👁️';
+                toggleBtn.setAttribute('aria-label', 'Show password');
+            }
+        }
+
+        // Google Sign In Handler
+        async function handleGoogleSignIn() {
+            const errorDiv = document.getElementById('errorMessage');
+            try {
+                if (!supabase) {
+                    showError(errorDiv, 'Supabase not initialized. Please refresh the page.');
+                    return;
+                }
+
+                const { data, error } = await signInWithGoogle();
+                
+                if (error) {
+                    showError(errorDiv, error.message || 'Failed to sign in with Google. Please try again.');
+                    return;
+                }
+
+                // The OAuth flow will redirect, so we don't need to handle success here
+                // The redirect will go to auth-callback.html which we'll create
+            } catch (error) {
+                console.error('Google sign-in error:', error);
+                showError(errorDiv, 'An error occurred. Please try again.');
+            }
+        }
+    </script>
+    <script>
+        // Wait for Supabase to load
+        setTimeout(() => {
+            // Handle login form submission
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const errorDiv = document.getElementById('errorMessage');
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+
+                // Validate email
+                if (!isValidEmail(email)) {
+                    showError(errorDiv, 'Please enter a valid email address');
+                    return;
+                }
+
+                // Show loading
+                showButtonLoading(submitBtn);
+                hideMessage(errorDiv);
+
+                // Sign in
+                const { data, error } = await signIn(email, password);
+
+                if (error) {
+                    hideButtonLoading(submitBtn);
+
+                    // Handle email not confirmed error
+                    if (error.code === 'email_not_confirmed' || (error.message && error.message.includes('not confirmed'))) {
+                        // Create a container for the error message and button
+                        errorDiv.innerHTML = `
+                            <div style="margin-bottom: 0.75rem;">${error.message || 'Your email address has not been confirmed.'}</div>
+                            <button type="button" id="resendConfirmationBtn" class="btn btn-outline" style="width: 100%;" data-i18n="auth.resendConfirmation">
+                                Resend Confirmation Email
+                            </button>
+                        `;
+                        errorDiv.style.display = 'block';
+                        errorDiv.classList.remove('success-message');
+                        errorDiv.classList.add('error-message');
+
+                        // Add click handler for resend button
+                        setTimeout(() => {
+                            const resendBtn = document.getElementById('resendConfirmationBtn');
+                            if (resendBtn) {
+                                resendBtn.addEventListener('click', async function () {
+                                    const resendBtn = this;
+                                    resendBtn.disabled = true;
+                                    resendBtn.textContent = typeof t === 'function' ? t('auth.sending') : 'Sending...';
+
+                                    const { data: resendData, error: resendError } = await resendConfirmationEmail(email);
+
+                                    if (resendError) {
+                                        showError(errorDiv, 'Failed to resend confirmation email. Please try again later.');
+                                    } else {
+                                        errorDiv.innerHTML = typeof t === 'function' ? t('auth.confirmationSent') : 'Confirmation email sent! Please check your inbox and click the confirmation link.';
+                                        errorDiv.classList.remove('error-message');
+                                        errorDiv.classList.add('success-message');
+                                        errorDiv.style.display = 'block';
+                                    }
+
+                                    resendBtn.disabled = false;
+                                    resendBtn.textContent = typeof t === 'function' ? t('auth.resendConfirmation') : 'Resend Confirmation Email';
+                                });
+                            }
+                        }, 100);
+                    } else {
+                        showError(errorDiv, error.message || 'Invalid email or password. Please try again.');
+                    }
+                    return;
+                }
+
+                if (data) {
+                    console.log('Login successful, user data:', data); // Debug
+
+                    // Check if user is admin - redirect to admin dashboard (case-insensitive check)
+                    const userRole = (data.role || '').toLowerCase();
+                    if (userRole === 'admin') {
+                        console.log('Admin detected, redirecting to admin dashboard');
+                        window.location.href = 'admin/index.html';
+                        return;
+                    }
+
+                    // Get redirect URL if exists
+                    const redirectUrl = getUrlParameter('redirect');
+                    const serviceParam = getUrlParameter('service');
+
+                    if (redirectUrl === 'booking' && serviceParam) {
+                        window.location.href = `booking.html?service=${serviceParam}`;
+                    } else if (redirectUrl) {
+                        window.location.href = redirectUrl;
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                }
+            });
+        }, 500);
+    </script>
+</body>
+
+</html>

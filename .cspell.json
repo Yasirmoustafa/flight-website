@@ -1,0 +1,25 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "GSAP",
+    "gsap",
+    "flatpickr",
+    "Flatpickr",
+    "Supabase",
+    "supabase",
+    "Menara",
+    "Persiaran",
+    "Bestari",
+    "Cyberjaya",
+    "concom",
+    "HSTS",
+    "CSP"
+  ],
+  "ignorePaths": [
+    "node_modules/**",
+    "*.min.js",
+    "*.min.css"
+  ]
+}
+

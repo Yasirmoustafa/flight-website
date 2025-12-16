@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Experience - MY FLY CLOUDLY TOURS</title>
+    <!-- Google Fonts - Brand Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Public+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Flatpickr Date Picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- Choices.js for Custom Dropdowns -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+</head>
+
+<body>
+    <!-- Navigation (will be replaced by navbar.js) -->
+    <nav class="navbar"></nav>
+
+    <!-- Booking Header -->
+    <section class="booking-header">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-i18n="booking.title">Book Your Experience</h2>
+                <p class="section-subtitle" data-i18n="booking.subtitle">Fill in the details to complete your booking</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Form -->
+    <section class="booking-section">
+        <div class="container">
+            <div class="booking-container">
+                <div class="booking-form-card">
+                    <form id="bookingForm" class="booking-form" novalidate>
+                        <!-- Service Selection -->
+                        <div class="form-group">
+                            <label for="service" data-i18n="booking.selectService">Select Service *</label>
+                            <select id="service" name="service" class="custom-select">
+                                <option value="" data-i18n="booking.chooseService">Choose a service...</option>
+                                <option value="one-day-pilot">Two Days Pilot - RM 500</option>
+                                <option value="flight-simulator">Flight Simulator - RM 300</option>
+                                <option value="skydive">Skydive Malaysia - RM 800</option>
+                                <option value="helicopter">Amazing Helicopter - RM 600</option>
+                                <option value="seaplane">Seaplane Flight Experience - RM 700</option>
+                                <option value="tandem">Tandem Parachute - RM 750</option>
+                            </select>
+                        </div>
+
+                        <!-- Date Selection -->
+                        <div class="form-group">
+                            <label for="bookingDate" data-i18n="booking.bookingDate">Booking Date *</label>
+                            <input type="text" id="bookingDate" name="bookingDate" class="custom-date-input"
+                                placeholder="Select date..." readonly data-i18n-placeholder="booking.selectDate">
+                        </div>
+
+                        <!-- Time Selection -->
+                        <div class="form-group">
+                            <label for="bookingTime" data-i18n="booking.bookingTime">Booking Time *</label>
+                            <select id="bookingTime" name="bookingTime" class="custom-select">
+                                <option value="" data-i18n="booking.selectTime">Select time...</option>
+                                <option value="09:00">9:00 AM</option>
+                                <option value="10:00">10:00 AM</option>
+                                <option value="11:00">11:00 AM</option>
+                                <option value="12:00">12:00 PM</option>
+                                <option value="13:00">1:00 PM</option>
+                                <option value="14:00">2:00 PM</option>
+                                <option value="15:00">3:00 PM</option>
+                                <option value="16:00">4:00 PM</option>
+                            </select>
+                        </div>
+
+                        <!-- Number of Participants -->
+                        <div class="form-group">
+                            <label for="participants" data-i18n="booking.participants">Number of Participants *</label>
+                            <input type="number" id="participants" name="participants" min="1" max="10" value="1">
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="form-group">
+                            <label for="notes" data-i18n="booking.notes">Special Requirements or Notes</label>
+                            <textarea id="notes" name="notes" rows="4"
+                                placeholder="Any special requirements or notes for your booking..." data-i18n-placeholder="booking.notesPlaceholder"></textarea>
+                        </div>
+
+                        <!-- Price Summary -->
+                        <div class="price-summary">
+                            <div class="price-item">
+                                <span data-i18n="booking.servicePrice">Service Price:</span>
+                                <span id="servicePrice">RM 0</span>
+                            </div>
+                            <div class="price-item">
+                                <span data-i18n="booking.participantsLabel">Participants:</span>
+                                <span id="participantsCount">1</span>
+                            </div>
+                            <div class="price-item total">
+                                <span data-i18n="booking.totalPrice">Total Price:</span>
+                                <span id="totalPrice">RM 0</span>
+                            </div>
+                        </div>
+
+                        <div id="errorMessage" class="error-message" style="display: none;"></div>
+                        <div id="successMessage" class="success-message" style="display: none;"></div>
+
+                        <div class="form-actions">
+                            <a href="dashboard.html" class="btn btn-secondary" data-i18n="common.cancel">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <span class="btn-text" data-i18n="booking.submitBooking">Submit Booking</span>
+                                <span class="btn-loader" style="display: none;" data-i18n="common.loading">Submitting...</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (will be replaced by footer.js) -->
+    <footer class="footer-modern"></footer>
+
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Flatpickr Date Picker -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Choices.js for Custom Dropdowns -->
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+    <script src="js/services.js"></script>
+    <script src="js/bookings.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Initialize navbar and footer - ensure it's solid on booking page
+        document.addEventListener('DOMContentLoaded', () => {
+            initFooter();
+            initRegularNavbar('booking.html');
+            applyTranslations(); // Apply translations after content is loaded
+            
+            // Force navbar to be solid since there's no hero section
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                navbar.classList.add('scrolled');
+            }
+
+            // Animate header and form
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+
+                // Animate section header
+                const sectionHeader = document.querySelector('.section-header');
+                if (sectionHeader) {
+                    gsap.set(sectionHeader, { opacity: 0, y: 40 });
+                    gsap.to(sectionHeader, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: 'power3.out'
+                    });
+                }
+
+                // Animate booking form card
+                const bookingCard = document.querySelector('.booking-form-card');
+                if (bookingCard) {
+                    gsap.set(bookingCard, { opacity: 0, y: 60, scale: 0.95 });
+                    gsap.to(bookingCard, {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 1,
+                        ease: 'power3.out',
+                        delay: 0.2
+                    });
+                }
+            }
+        });
+    </script>
+    <script>
+            // Check authentication
+            setTimeout(() => {
+                const user = getCurrentUser();
+                if (!user) {
+                    window.location.href = 'login.html?redirect=booking.html';
+                }
+            }, 500);
+    </script>
+    <script>
+            let allServices = [];
+            let selectedService = null;
+            let serviceChoices = null;
+            let timeChoices = null;
+            let datePicker = null;
+
+            // Initialize custom dropdowns and date picker
+            document.addEventListener('DOMContentLoaded', () => {
+                // Initialize Flatpickr date picker
+                const dateInput = document.getElementById('bookingDate');
+                if (dateInput && typeof flatpickr !== 'undefined') {
+                    const today = new Date();
+                    datePicker = flatpickr(dateInput, {
+                        dateFormat: 'Y-m-d',
+                        minDate: today,
+                        defaultDate: null,
+                        placeholder: 'Select date...',
+                        theme: 'modern',
+                        animate: true,
+                        allowInput: false,
+                        clickOpens: true
+                    });
+                }
+
+                // Initialize Choices.js for service dropdown
+                const serviceSelect = document.getElementById('service');
+                if (serviceSelect && typeof Choices !== 'undefined') {
+                    serviceChoices = new Choices(serviceSelect, {
+                        searchEnabled: false,
+                        itemSelectText: '',
+                        shouldSort: false,
+                        classNames: {
+                            containerOuter: 'choices',
+                            containerInner: 'choices__inner',
+                            input: 'choices__input',
+                            inputCloned: 'choices__input--cloned',
+                            list: 'choices__list',
+                            listItems: 'choices__list--multiple',
+                            listSingle: 'choices__list--single',
+                            listDropdown: 'choices__list--dropdown',
+                            item: 'choices__item',
+                            itemSelectable: 'choices__item--selectable',
+                            itemDisabled: 'choices__item--disabled',
+                            itemChoice: 'choices__item--choice',
+                            placeholder: 'choices__placeholder',
+                            group: 'choices__group',
+                            groupHeading: 'choices__heading',
+                            button: 'choices__button',
+                            activeState: 'is-active',
+                            focusState: 'is-focused',
+                            openState: 'is-open',
+                            disabledState: 'is-disabled',
+                            highlightedState: 'is-highlighted',
+                            selectedState: 'is-selected',
+                            flippedState: 'is-flipped',
+                            loadingState: 'is-loading',
+                            noResults: 'has-no-results',
+                            noChoices: 'has-no-choices'
+                        }
+                    });
+
+                    // Add custom class to the container (wait for Choices.js to fully initialize)
+                    setTimeout(() => {
+                        if (serviceChoices && serviceChoices.containerOuter && serviceChoices.containerOuter.classList) {
+                            serviceChoices.containerOuter.classList.add('choices-service');
+                        }
+                    }, 100);
+
+                    // Listen for selection changes (Choices.js uses 'change' event)
+                    serviceSelect.addEventListener('change', function (event) {
+                        calculatePrice();
+                    });
+                }
+
+                // Initialize Choices.js for time dropdown
+                const timeSelect = document.getElementById('bookingTime');
+                if (timeSelect && typeof Choices !== 'undefined') {
+                    timeChoices = new Choices(timeSelect, {
+                        searchEnabled: false,
+                        itemSelectText: '',
+                        shouldSort: false,
+                        classNames: {
+                            containerOuter: 'choices',
+                            containerInner: 'choices__inner',
+                            input: 'choices__input',
+                            inputCloned: 'choices__input--cloned',
+                            list: 'choices__list',
+                            listItems: 'choices__list--multiple',
+                            listSingle: 'choices__list--single',
+                            listDropdown: 'choices__list--dropdown',
+                            item: 'choices__item',
+                            itemSelectable: 'choices__item--selectable',
+                            itemDisabled: 'choices__item--disabled',
+                            itemChoice: 'choices__item--choice',
+                            placeholder: 'choices__placeholder',
+                            group: 'choices__group',
+                            groupHeading: 'choices__heading',
+                            button: 'choices__button',
+                            activeState: 'is-active',
+                            focusState: 'is-focused',
+                            openState: 'is-open',
+                            disabledState: 'is-disabled',
+                            highlightedState: 'is-highlighted',
+                            selectedState: 'is-selected',
+                            flippedState: 'is-flipped',
+                            loadingState: 'is-loading',
+                            noResults: 'has-no-results',
+                            noChoices: 'has-no-choices'
+                        }
+                    });
+
+                    // Add custom class to the container (wait for Choices.js to fully initialize)
+                    setTimeout(() => {
+                        if (timeChoices && timeChoices.containerOuter && timeChoices.containerOuter.classList) {
+                            timeChoices.containerOuter.classList.add('choices-time');
+                        }
+                    }, 100);
+                }
+
+                // Load services for dropdown
+                setTimeout(async () => {
+                    const { data: services } = await getAllServices();
+                    if (services && services.length > 0) {
+                        allServices = services;
+
+                        // Get service from URL FIRST (before setting choices)
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const serviceParam = urlParams.get('service');
+                        let preselectedServiceId = null;
+                        if (serviceParam) {
+                            const service = services.find(s => s.id === serviceParam);
+                            if (service) {
+                                preselectedServiceId = service.id;
+                                selectedService = service;
+                            }
+                        }
+
+                        // Update service dropdown options
+                        if (serviceChoices) {
+                            const options = services.map(s => ({
+                                value: s.id,
+                                label: `${s.name} - ${formatCurrency(s.price)}`
+                            }));
+                            serviceChoices.setChoices(options, 'value', 'label', true);
+
+                            // Set preselected service AFTER choices are loaded and rendered
+                            if (preselectedServiceId) {
+                                // Wait for Choices.js to fully render the new options
+                                setTimeout(() => {
+                                    try {
+                                        serviceChoices.setChoiceByValue(preselectedServiceId);
+                                        // Also set the underlying select value as backup
+                                        const originalSelect = document.getElementById('service');
+                                        if (originalSelect) {
+                                            originalSelect.value = preselectedServiceId;
+                                        }
+                                        calculatePrice();
+                                    } catch (error) {
+                                        console.error('Error setting service value:', error);
+                                        // Fallback: set directly on select and trigger change
+                                        const originalSelect = document.getElementById('service');
+                                        if (originalSelect) {
+                                            originalSelect.value = preselectedServiceId;
+                                            originalSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                                        }
+                                    }
+                                }, 400); // Increased delay to ensure Choices.js is ready
+                            }
+                        } else {
+                            // Fallback if Choices.js not loaded
+                            const serviceSelect = document.getElementById('service');
+                            const chooseServiceText = typeof t === 'function' ? t('booking.chooseService') : 'Choose a service...';
+                            serviceSelect.innerHTML = `<option value="">${chooseServiceText}</option>` +
+                                services.map(s => `<option value="${s.id}">${s.name} - ${formatCurrency(s.price)}</option>`).join('');
+
+                            // Set preselected service
+                            if (preselectedServiceId) {
+                                serviceSelect.value = preselectedServiceId;
+                                calculatePrice();
+                            }
+                        }
+                    }
+                }, 500);
+            });
+
+            // Calculate price
+            function calculatePrice() {
+                let serviceId;
+                if (serviceChoices) {
+                    serviceId = serviceChoices.getValue(true);
+                } else {
+                    serviceId = document.getElementById('service').value;
+                }
+
+                const participants = parseInt(document.getElementById('participants').value) || 1;
+
+                selectedService = allServices.find(s => s.id === serviceId);
+                if (!selectedService) {
+                    document.getElementById('servicePrice').textContent = 'RM 0';
+                    document.getElementById('participantsCount').textContent = participants;
+                    document.getElementById('totalPrice').textContent = 'RM 0';
+                    return;
+                }
+
+                const price = parseFloat(selectedService.price);
+                const total = price * participants;
+
+                document.getElementById('servicePrice').textContent = formatCurrency(price);
+                document.getElementById('participantsCount').textContent = participants;
+                document.getElementById('totalPrice').textContent = formatCurrency(total);
+            }
+
+            // Listen for changes
+            if (serviceChoices) {
+                // Listen to Choices.js custom event
+                document.getElementById('service').addEventListener('choice', function (event) {
+                    calculatePrice();
+                });
+                // Also listen to change as fallback
+                document.getElementById('service').addEventListener('change', calculatePrice);
+            } else {
+                document.getElementById('service').addEventListener('change', calculatePrice);
+            }
+
+            document.getElementById('participants').addEventListener('input', calculatePrice);
+
+            // Handle form submission
+            document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const errorDiv = document.getElementById('errorMessage');
+                const successDiv = document.getElementById('successMessage');
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+
+                // Validate
+                let serviceId;
+                if (serviceChoices) {
+                    serviceId = serviceChoices.getValue(true);
+                } else {
+                    serviceId = document.getElementById('service').value;
+                }
+
+                let date;
+                if (datePicker) {
+                    date = datePicker.input.value;
+                } else {
+                    date = document.getElementById('bookingDate').value;
+                }
+
+                let time;
+                if (timeChoices) {
+                    time = timeChoices.getValue(true);
+                } else {
+                    time = document.getElementById('bookingTime').value;
+                }
+                const participants = parseInt(document.getElementById('participants').value);
+                const notes = document.getElementById('notes').value;
+
+                if (!serviceId || !date || !time || !participants) {
+                    showError(errorDiv, typeof t === 'function' ? t('booking.fillAllFields') : 'Please fill in all required fields');
+                    return;
+                }
+
+                if (!selectedService) {
+                    showError(errorDiv, typeof t === 'function' ? t('booking.selectServiceError') : 'Please select a service');
+                    return;
+                }
+
+                const totalPrice = parseFloat(selectedService.price) * participants;
+
+                // Show loading
+                showButtonLoading(submitBtn);
+                hideMessage(errorDiv);
+                hideMessage(successDiv);
+
+                // Format date properly (Flatpickr returns Y-m-d format)
+                let formattedDate = date;
+                if (datePicker && date) {
+                    // Flatpickr already returns Y-m-d format, which is what we need
+                    formattedDate = date;
+                } else if (date) {
+                    // If using native date input, ensure proper format
+                    const dateObj = new Date(date);
+                    formattedDate = dateObj.toISOString().split('T')[0];
+                }
+
+                // Create booking
+                const { data, error } = await createBooking({
+                    serviceId: serviceId,
+                    date: formattedDate,
+                    time: time,
+                    participants: participants,
+                    totalPrice: totalPrice,
+                    notes: notes || null
+                });
+
+                if (error) {
+                    hideButtonLoading(submitBtn);
+                    showError(errorDiv, error.message || 'Failed to create booking. Please try again.');
+                    return;
+                }
+
+                if (data) {
+                    showSuccess(successDiv, typeof t === 'function' ? t('booking.bookingSuccess') : 'Booking submitted successfully! Redirecting to dashboard...');
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 2000);
+                }
+            });
+    </script>
+</body>
+
+</html>

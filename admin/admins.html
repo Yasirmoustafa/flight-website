@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Admins - MY FLY CLOUDLY TOURS Admin</title>
+    <!-- Google Fonts - Brand Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Public+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <!-- Navigation (will be replaced by navbar.js) -->
+    <nav class="navbar"></nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h1 data-i18n="admin.manageAdmins">Manage Admins</h1>
+                <p class="section-subtitle" data-i18n="admin.manageAdminsSubtitle">Register new admin accounts or remove admin access</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Content -->
+    <section class="admin-content">
+        <div class="container">
+            <!-- Register New Admin Form -->
+            <div class="admin-card fade-in" style="margin-bottom: 2rem;">
+                <h2 data-i18n="admin.registerNewAdmin">Register New Admin</h2>
+                <form id="adminRegisterForm" class="admin-form">
+                    <div class="form-group">
+                        <label for="adminFullName" data-i18n="admin.fullName">Full Name *</label>
+                        <input type="text" id="adminFullName" required placeholder="Enter full name" data-i18n-placeholder="admin.enterFullName">
+                    </div>
+                    <div class="form-group">
+                        <label for="adminEmail" data-i18n="admin.email">Email *</label>
+                        <input type="email" id="adminEmail" required placeholder="Enter email address" data-i18n-placeholder="admin.enterEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPassword" data-i18n="admin.password">Password *</label>
+                        <input type="password" id="adminPassword" required
+                            placeholder="Enter password (min 6 characters)" minlength="6" data-i18n-placeholder="admin.enterPassword">
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPhone" data-i18n="admin.phone">Phone (Optional)</label>
+                        <input type="tel" id="adminPhone" placeholder="Enter phone number" data-i18n-placeholder="admin.enterPhone">
+                    </div>
+                    <div id="adminError" class="error-message" style="display: none;"></div>
+                    <div id="adminSuccess" class="success-message" style="display: none;"></div>
+                    <button type="submit" class="btn btn-primary" data-i18n="admin.registerAdmin">Register Admin</button>
+                </form>
+            </div>
+
+            <!-- Current Admins List -->
+            <div class="admin-card fade-in">
+                <h2 data-i18n="admin.currentAdmins">Current Admins</h2>
+                <div id="adminsTableContainer" class="bookings-table-container">
+                    <table class="bookings-table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="admin.name">Name</th>
+                                <th data-i18n="admin.email">Email</th>
+                                <th data-i18n="admin.phone">Phone</th>
+                                <th data-i18n="admin.created">Created</th>
+                                <th data-i18n="admin.actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminsTableBody">
+                            <tr>
+                                <td colspan="5" class="text-center" data-i18n="admin.loadingAdmins">Loading admins...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (will be replaced by footer.js) -->
+    <footer class="footer-modern"></footer>
+
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <!-- Scripts -->
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/translations.js"></script>
+    <script src="../js/i18n.js"></script>
+    <script src="../js/navbar.js"></script>
+    <script src="../js/footer.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Initialize navbar and footer
+        document.addEventListener('DOMContentLoaded', () => {
+            initAdminNavbar('admins.html');
+            initFooter();
+            applyTranslations(); // Apply translations after content is loaded
+            // Force navbar to be solid
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                navbar.classList.add('scrolled');
+            }
+        });
+    </script>
+    <script>
+        // Initialize GSAP animations (visual only, doesn't affect functionality)
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+
+                // Animate section header
+                const sectionHeader = document.querySelector('.page-header .section-header');
+                if (sectionHeader) {
+                    gsap.set(sectionHeader, { opacity: 0, y: 40 });
+                    gsap.to(sectionHeader, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: 'power3.out'
+                    });
+                }
+
+                // Animate form card
+                const formCard = document.querySelector('.admin-card.fade-in');
+                if (formCard) {
+                    gsap.set(formCard, { opacity: 0, y: 30 });
+                    gsap.to(formCard, {
+                        scrollTrigger: {
+                            trigger: formCard,
+                            start: 'top 80%',
+                            toggleActions: 'play none none none'
+                        },
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        ease: 'power2.out'
+                    });
+                }
+
+                // Animate table card
+                const tableCard = document.querySelectorAll('.admin-card.fade-in')[1];
+                if (tableCard) {
+                    gsap.set(tableCard, { opacity: 0, y: 30 });
+                    gsap.to(tableCard, {
+                        scrollTrigger: {
+                            trigger: tableCard,
+                            start: 'top 80%',
+                            toggleActions: 'play none none none'
+                        },
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        ease: 'power2.out'
+                    });
+                }
+            }
+        });
+
+        // Animate table rows after they are rendered (called from loadAdmins)
+        function animateAdminRows() {
+            if (typeof gsap !== 'undefined') {
+                const rows = document.querySelectorAll('.admin-row');
+                if (rows.length > 0) {
+                    gsap.set(rows, { opacity: 0, x: -20 });
+                    gsap.to(rows, {
+                        opacity: 1,
+                        x: 0,
+                        duration: 0.4,
+                        ease: 'power2.out',
+                        stagger: 0.05
+                    });
+                }
+            }
+        }
+    </script>
+    <script>
+        // Wait for Supabase to load
+        setTimeout(async () => {
+            // Check admin authentication
+            const user = getCurrentUser();
+            if (!user || !isAdmin()) {
+                const errorMsg = typeof t === 'function' ? t('admin.accessDenied') : 'Access denied. Admin privileges required.';
+                alert(errorMsg);
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Load current admins
+            await loadAdmins();
+
+            // Handle form submission
+            document.getElementById('adminRegisterForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await registerNewAdmin();
+            });
+
+            // Logout handler
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await signOut();
+                    window.location.href = '../index.html';
+                });
+            }
+        }, 1000);
+
+        async function loadAdmins() {
+            try {
+                if (!supabase) {
+                    console.error('Supabase not initialized');
+                    return;
+                }
+
+                // Get all profiles (we'll filter admins client-side for case-insensitive check)
+                const { data: allProfiles, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error loading admins:', error);
+                    const errorText = typeof t === 'function' ? t('admin.errorLoadingAdmins') : 'Error loading admins:';
+                    document.getElementById('adminsTableBody').innerHTML =
+                        `<tr><td colspan="5" class="text-center">${errorText} ${error.message || 'Unknown error'}</td></tr>`;
+                    if (typeof applyTranslations === 'function') {
+                        setTimeout(() => applyTranslations(), 100);
+                    }
+                    return;
+                }
+
+                console.log('All profiles loaded:', allProfiles); // Debug
+                console.log('Number of profiles:', allProfiles?.length || 0); // Debug
+
+                // Filter admins (case-insensitive)
+                const admins = (allProfiles || []).filter(p => {
+                    const role = (p.role || '').toLowerCase();
+                    const isAdmin = role === 'admin';
+                    console.log(`Profile ${p.full_name}: role="${p.role}" -> isAdmin=${isAdmin}`); // Debug
+                    return isAdmin;
+                });
+
+                console.log('Filtered admins:', admins); // Debug
+                console.log('Number of admins:', admins?.length || 0); // Debug
+
+                const tableBody = document.getElementById('adminsTableBody');
+                const currentUser = getCurrentUser();
+
+                if (!admins || admins.length === 0) {
+                    const noAdminsText = typeof t === 'function' ? t('admin.noAdminsFound') : 'No admins found';
+                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center">${noAdminsText}</td></tr>`;
+                    if (typeof applyTranslations === 'function') {
+                        setTimeout(() => applyTranslations(), 100);
+                    }
+                    return;
+                }
+
+                tableBody.innerHTML = admins.map(admin => {
+                    const isCurrentUser = currentUser && currentUser.id === admin.id;
+                    // Try to get email: from profile first, then from current user, or show message
+                    let email = admin.email;
+                    if (!email && isCurrentUser && currentUser.email) {
+                        email = currentUser.email;
+                    }
+                    if (!email) {
+                        // Email not available - show message
+                        email = '<span style="color: var(--text-secondary); font-style: italic;">Email not set</span>';
+                    }
+
+                    return `
+                        <tr class="admin-row">
+                            <td>
+                                <div class="user-name-cell">
+                                    <strong>${admin.full_name || 'N/A'}</strong>
+                                </div>
+                            </td>
+                            <td>${email}</td>
+                            <td>${admin.phone || '-'}</td>
+                            <td>${formatDate(admin.created_at)}</td>
+                            <td>
+                                <div class="actions-cell">
+                                    ${!isCurrentUser ? `
+                                        <button class="action-btn-icon delete-btn" 
+                                                onclick="removeAdminAccess('${admin.id}', '${admin.full_name || 'this admin'}')"
+                                                title="${typeof t === 'function' ? t('admin.removeAdminAccess') : 'Remove Admin Access'}">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M18 6L6 18M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    ` : `<span style="color: var(--text-secondary); font-size: 0.875rem;" data-i18n="admin.currentUser">${typeof t === 'function' ? t('admin.currentUser') : 'Current User'}</span>`}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                // Apply translations to dynamically generated content
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 200);
+                }
+
+                // Animate table rows after rendering
+                setTimeout(animateAdminRows, 50);
+            } catch (error) {
+                console.error('Error loading admins:', error);
+                const errorText = typeof t === 'function' ? t('admin.errorLoadingAdmins') : 'Error loading admins';
+                document.getElementById('adminsTableBody').innerHTML =
+                    `<tr><td colspan="5" class="text-center">${errorText}</td></tr>`;
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 100);
+                }
+            }
+        }
+
+        async function registerNewAdmin() {
+            const form = document.getElementById('adminRegisterForm');
+            const errorDiv = document.getElementById('adminError');
+            const successDiv = document.getElementById('adminSuccess');
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            const fullName = document.getElementById('adminFullName').value.trim();
+            const email = document.getElementById('adminEmail').value.trim().toLowerCase();
+            const password = document.getElementById('adminPassword').value;
+            const phone = document.getElementById('adminPhone').value.trim() || null;
+
+            // Validation
+            if (!fullName || !email || !password) {
+                const errorMsg = typeof t === 'function' ? t('admin.fillAllFields') : 'Please fill in all required fields';
+                showError(errorDiv, errorMsg);
+                return;
+            }
+
+            if (password.length < 6) {
+                const errorMsg = typeof t === 'function' ? t('admin.passwordMinLength') : 'Password must be at least 6 characters';
+                showError(errorDiv, errorMsg);
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                const errorMsg = typeof t === 'function' ? t('admin.validEmail') : 'Please enter a valid email address';
+                showError(errorDiv, errorMsg);
+                return;
+            }
+
+            hideMessage(errorDiv);
+            hideMessage(successDiv);
+            showButtonLoading(submitBtn);
+            submitBtn.disabled = true;
+
+            try {
+                // Step 1: Skip email check (email column doesn't exist in profiles table)
+                // We'll handle existing users when trying to sign up
+                let existingProfile = null;
+                let findError = null;
+
+                // If profile exists (we'll find out during signup), just update their role to admin
+                if (existingProfile && !findError) {
+                    console.log('Existing profile found, updating role to admin...');
+                    const updatePayload = {
+                        role: 'admin',  // IMPORTANT: Set role to 'admin'
+                        full_name: fullName,
+                        phone: phone || existingProfile.phone
+                    };
+
+                    const { data: updatedProfile, error: updateError } = await supabase
+                        .from('profiles')
+                        .update(updatePayload)
+                        .eq('id', existingProfile.id)
+                        .select();
+
+                    if (updateError) {
+                        throw new Error('User exists but failed to grant admin access: ' + updateError.message);
+                    }
+
+                    console.log('Profile updated:', updatedProfile);
+                    if (updatedProfile && updatedProfile[0]) {
+                        console.log('Updated role:', updatedProfile[0].role);
+                    }
+
+                    // Success - existing user is now admin
+                    hideButtonLoading(submitBtn);
+                    submitBtn.disabled = false;
+                    const successMsg = typeof t === 'function' 
+                        ? t('admin.existingUserGrantedAdmin').replace('{name}', fullName)
+                        : `Existing user ${fullName} has been granted admin access! They can log in with their existing password.`;
+                    showSuccess(successDiv, successMsg);
+                    form.reset();
+                    await loadAdmins();
+                    setTimeout(() => hideMessage(successDiv), 5000);
+                    return;
+                }
+
+                // Step 2: Try to create new account
+                // Sign up the new user directly (don't use signUp() as it logs in automatically)
+                const { data: authData, error: signupError } = await supabase.auth.signUp({
+                    email: email.toLowerCase().trim(),
+                    password: password,
+                    options: {
+                        data: {
+                            full_name: fullName,
+                            phone: phone
+                        }
+                    }
+                });
+
+                // Handle case where email already exists in auth.users but profile was deleted
+                if (signupError) {
+                    if (signupError.message && (signupError.message.includes('already registered') || signupError.message.includes('already exists'))) {
+                        // User exists in auth.users but profile was deleted
+                        // We need to find their user ID and create a new profile
+                        console.log('Email exists in auth.users, trying to find user ID...');
+
+                        // We can't directly query auth.users, so we'll try to sign in to get the user ID
+                        // But we don't know the password, so we need a different approach
+                        // Actually, we can use the admin API or create profile by trying to get user
+                        // For now, let's show a helpful error message
+                        throw new Error('User with this email already exists in the system. Please use a different email, or if you deleted this user, you need to delete them from Authentication → Users in Supabase Dashboard first.');
+                    }
+                    throw signupError;
+                }
+
+                if (!authData || !authData.user) {
+                    throw new Error('Failed to create user account');
+                }
+
+                // Step 3: Create/update profile with admin role
+                // The trigger might have already created a profile with role='user'
+                // So we need to update it to 'admin' after creation
+                console.log('Creating/updating profile for user:', authData.user.id, 'with role: admin');
+
+                // First, wait a bit for trigger to complete (if it exists)
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Create/update profile with email and admin role
+                const profilePayload = {
+                    id: authData.user.id,
+                    full_name: fullName,
+                    email: email.toLowerCase().trim(), // Save email to profile
+                    phone: phone || null,
+                    role: 'admin'  // CRITICAL: Set role to 'admin'
+                };
+
+                // Try upsert with email
+                let { data: profileData, error: profileError } = await supabase
+                    .from('profiles')
+                    .upsert(profilePayload, {
+                        onConflict: 'id'
+                    })
+                    .select();
+
+                // If upsert fails or role is wrong, try update instead
+                // (profile might already exist from trigger with role='user')
+                if (profileError || (profileData && profileData[0] && profileData[0].role !== 'admin')) {
+                    console.log('Upsert failed or role is wrong, trying update instead...', profileError);
+                    const { data: updatedData, error: updateError } = await supabase
+                        .from('profiles')
+                        .update({
+                            role: 'admin',  // CRITICAL: Force role to 'admin'
+                            full_name: fullName,
+                            email: email.toLowerCase().trim(), // Save email to profile
+                            phone: phone || null
+                        })
+                        .eq('id', authData.user.id)
+                        .select();
+
+                    if (!updateError && updatedData) {
+                        profileData = updatedData;
+                        profileError = null;
+                        console.log('Profile updated successfully via update()');
+                    } else if (updateError) {
+                        profileError = updateError;
+                    }
+                }
+
+                if (profileError) {
+                    console.error('Error creating admin profile:', profileError);
+                    throw new Error('Account created but failed to set admin role: ' + profileError.message);
+                }
+
+                console.log('Profile created/updated successfully:', profileData);
+                if (profileData && profileData[0]) {
+                    console.log('Profile role after creation:', profileData[0].role);
+
+                    // Double-check: If role is still 'user', force update it
+                    if ((profileData[0].role || '').toLowerCase() !== 'admin') {
+                        console.warn('WARNING: Profile role is not "admin"! It is:', profileData[0].role);
+                        console.log('Force updating role to admin...');
+                        const { error: forceUpdateError } = await supabase
+                            .from('profiles')
+                            .update({ role: 'admin' })
+                            .eq('id', authData.user.id);
+
+                        if (forceUpdateError) {
+                            console.error('Failed to force update role to admin:', forceUpdateError);
+                        } else {
+                            console.log('Role force-updated to admin successfully');
+                        }
+                    }
+                }
+
+                // Note: If email already exists, Supabase will return an error during signUp
+                // The user account exists but we're just updating their role to admin
+
+                // Success
+                hideButtonLoading(submitBtn);
+                submitBtn.disabled = false;
+                const successMsg = typeof t === 'function' 
+                    ? t('admin.adminAccountCreated').replace('{name}', fullName).replace('{email}', email)
+                    : `Admin account created successfully! ${fullName} can now log in with email: ${email}`;
+                showSuccess(successDiv, successMsg);
+                form.reset();
+
+                // Reload admins list
+                await loadAdmins();
+
+                // Clear success message after 5 seconds
+                setTimeout(() => {
+                    hideMessage(successDiv);
+                }, 5000);
+
+            } catch (error) {
+                hideButtonLoading(submitBtn);
+                submitBtn.disabled = false;
+                const errorMsg = typeof t === 'function' 
+                    ? (error.message || t('admin.failedToRegisterAdmin'))
+                    : (error.message || 'Failed to register admin. Please try again.');
+                showError(errorDiv, errorMsg);
+            }
+        }
+
+        async function removeAdminAccess(adminId, adminName) {
+            const confirmMsg = typeof t === 'function' 
+                ? t('admin.confirmRemoveAdminAccess').replace('{name}', adminName)
+                : `Are you sure you want to remove admin access from ${adminName}? They will become a regular user and will no longer have admin privileges.`;
+            if (!confirm(confirmMsg)) {
+                return;
+            }
+
+            try {
+                console.log('Removing admin access for:', adminId);
+
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .update({ role: 'user' })
+                    .eq('id', adminId)
+                    .select();
+
+                if (error) {
+                    console.error('Error removing admin access:', error);
+                    const errorMsg = typeof t === 'function' ? t('admin.errorRemovingAdminAccess') : 'Error removing admin access:';
+                    alert(`${errorMsg} ${error.message}\n\nMake sure you ran the SQL fix: fix_admin_view_all_profiles_final.sql`);
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    const notFoundMsg = typeof t === 'function' ? t('admin.noProfileFound') : 'No profile found to update. The user may not exist.';
+                    alert(notFoundMsg);
+                    return;
+                }
+
+                console.log('Successfully updated profile:', data);
+                const successMsg = typeof t === 'function' 
+                    ? t('admin.adminAccessRemoved').replace('{name}', adminName)
+                    : `Admin access removed successfully. ${adminName} is now a regular user.`;
+                alert(successMsg);
+                await loadAdmins();
+            } catch (error) {
+                console.error('Error removing admin access:', error);
+                const errorMsg = typeof t === 'function' ? t('admin.errorRemovingAdminAccess') : 'Error removing admin access:';
+                alert(`${errorMsg} ${error.message}`);
+            }
+        }
+    </script>
+</body>
+
+</html>
