@@ -4297,6 +4297,26 @@ body:has(.hero) .navbar:not(.scrolled) .burger-button span {
     pointer-events: auto;
 }
 
+/* RTL Support for Mobile Menu - Slide from left in Arabic */
+[dir="rtl"] .tuxdi-nav {
+    right: auto;
+    left: 0;
+    transform: translateX(-100%);
+}
+
+[dir="rtl"] .tuxdi-nav.active {
+    transform: translateX(0);
+}
+
+/* RTL: Reverse animation direction for menu items */
+[dir="rtl"] .tuxdi-nav-link {
+    transform: translateX(-50px);
+}
+
+[dir="rtl"] .tuxdi-nav.active .tuxdi-nav-link {
+    transform: translateX(0);
+}
+
 .tuxdi-nav-inner {
     padding: 6rem 2.5rem 2.5rem 2.5rem;
     height: 100%;
