@@ -96,22 +96,43 @@
         // Store the client instance globally (initially null, will be set when initialized)
         window.supabaseClient = null;
         
+        // Flag to prevent recursive calls to getSupabaseClient
+        let isGettingClient = false;
+        
         // Create a function to get the client (prevents infinite loops)
         window.getSupabaseClient = function() {
+            // Prevent recursive calls
+            if (isGettingClient) {
+                console.warn('getSupabaseClient called recursively, returning null');
+                return null;
+            }
+            
             // If already initialized, return it
             if (window.supabaseClient) {
                 return window.supabaseClient;
             }
-            // Try to initialize if not already done (but prevent recursion)
-            if (!isInitializing) {
-                const client = initializeSupabase();
-                if (client) {
-                    window.supabaseClient = client;
+            
+            // Set flag to prevent recursion
+            isGettingClient = true;
+            
+            try {
+                // Try to initialize if not already done (but prevent recursion)
+                if (!isInitializing) {
+                    const client = initializeSupabase();
+                    if (client) {
+                        window.supabaseClient = client;
+                    }
+                    isGettingClient = false;
+                    return client;
                 }
-                return client;
+                // If currently initializing, return null
+                isGettingClient = false;
+                return null;
+            } catch (error) {
+                isGettingClient = false;
+                console.error('Error in getSupabaseClient:', error);
+                return null;
             }
-            // If currently initializing, return null
-            return null;
         };
         
         // Mark as initialized to prevent redeclaration

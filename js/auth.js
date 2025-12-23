@@ -1,23 +1,13 @@
 // Authentication Functions
 
-// Helper function to get Supabase client
+// Helper function to get Supabase client - use global function from config.js
 function getSupabaseClient() {
-    // Use global getSupabaseClient if available (from config.js)
+    // Always use the global function from config.js to avoid conflicts
     if (typeof window !== 'undefined' && typeof window.getSupabaseClient === 'function') {
         return window.getSupabaseClient();
     }
-    // Try to get from window.supabaseClient directly
-    if (typeof window !== 'undefined' && window.supabaseClient) {
-        return window.supabaseClient;
-    }
-    // Last resort: try to initialize
-    if (typeof initializeSupabase === 'function') {
-        const client = initializeSupabase();
-        if (client && typeof window !== 'undefined') {
-            window.supabaseClient = client;
-        }
-        return client;
-    }
+    // Fallback: return null if not available (shouldn't happen if config.js loaded first)
+    console.warn('Supabase client not available. Make sure config.js is loaded before auth.js');
     return null;
 }
 
