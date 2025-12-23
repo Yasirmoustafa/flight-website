@@ -193,10 +193,20 @@
             // Load all users
             await loadAllUsers();
 
-            // Search handler
+            // Search handler with debouncing to prevent excessive requests
             const searchInput = document.getElementById('userSearch');
             if (searchInput) {
-                searchInput.addEventListener('input', searchUsers);
+                // Use debounce utility if available, otherwise create inline
+                const debouncedSearch = typeof debounce === 'function' 
+                    ? debounce(searchUsers, 300)
+                    : (() => {
+                        let timeout;
+                        return () => {
+                            clearTimeout(timeout);
+                            timeout = setTimeout(searchUsers, 300);
+                        };
+                    })();
+                searchInput.addEventListener('input', debouncedSearch);
             }
 
             // Role filter handler (also has onchange, but adding listener for consistency)

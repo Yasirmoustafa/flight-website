@@ -16,28 +16,36 @@ async function getDashboardStats() {
             };
         }
 
-        // Get total bookings
-        const { count: totalBookings } = await supabase
+        // Get total bookings (optimized - only count, no data)
+        const { count: totalBookings, error: totalError } = await supabase
             .from('bookings')
             .select('*', { count: 'exact', head: true });
         
-        // Get pending bookings
-        const { count: pendingBookings } = await supabase
+        if (totalError) throw totalError;
+        
+        // Get pending bookings (optimized)
+        const { count: pendingBookings, error: pendingError } = await supabase
             .from('bookings')
             .select('*', { count: 'exact', head: true })
             .eq('status', 'pending');
         
-        // Get approved bookings
-        const { count: approvedBookings } = await supabase
+        if (pendingError) throw pendingError;
+        
+        // Get approved bookings (optimized)
+        const { count: approvedBookings, error: approvedError } = await supabase
             .from('bookings')
             .select('*', { count: 'exact', head: true })
             .eq('status', 'approved');
         
-        // Get total revenue (sum of approved bookings)
-        const { data: approvedBookingsData } = await supabase
+        if (approvedError) throw approvedError;
+        
+        // Get total revenue (only fetch total_price column, not all data)
+        const { data: approvedBookingsData, error: revenueError } = await supabase
             .from('bookings')
             .select('total_price')
             .eq('status', 'approved');
+        
+        if (revenueError) throw revenueError;
         
         const totalRevenue = approvedBookingsData?.reduce((sum, booking) => sum + parseFloat(booking.total_price || 0), 0) || 0;
         

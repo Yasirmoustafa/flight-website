@@ -41,9 +41,10 @@ async function getAllServices() {
             return { data: placeholderServices, error: null };
         }
 
+        // Optimize query - only select needed columns
         const { data, error } = await supabase
             .from('services')
-            .select('*')
+            .select('id, name, description, price, duration, image_url, active, created_at')
             .eq('active', true)
             .order('created_at', { ascending: false });
         

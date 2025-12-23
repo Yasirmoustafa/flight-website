@@ -635,8 +635,10 @@ function initMobileMenu() {
         }, 300);
 
         // Close menu when clicking outside (with small delay to avoid conflicts)
+        // Store reference for cleanup
+        let handleOutsideClick = null;
         setTimeout(() => {
-            const handleOutsideClick = (e) => {
+            handleOutsideClick = (e) => {
                 if (tuxdiNav.classList.contains('active') &&
                     !tuxdiNav.contains(e.target) &&
                     !burgerButton.contains(e.target)) {
@@ -644,6 +646,13 @@ function initMobileMenu() {
                 }
             };
             document.addEventListener('click', handleOutsideClick);
+            
+            // Cleanup on page unload
+            window.addEventListener('beforeunload', () => {
+                if (handleOutsideClick) {
+                    document.removeEventListener('click', handleOutsideClick);
+                }
+            });
         }, 200);
 
         // Close menu when clicking a nav link (except logout, contact button, and external links)
