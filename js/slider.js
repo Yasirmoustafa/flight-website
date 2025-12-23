@@ -7,7 +7,9 @@
  */
 async function getSliderImages() {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             console.warn('Supabase not initialized, returning empty array');
             return [];
         }

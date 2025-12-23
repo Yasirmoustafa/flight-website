@@ -115,30 +115,34 @@
         }
         
         // Only define window.supabase if it's the library (has createClient)
-        // Don't redefine if it's already our client
+        // Don't redefine if it's already our client or already defined
         if (window.supabase && typeof window.supabase.createClient === 'function') {
-            try {
-                Object.defineProperty(window, 'supabase', {
-                    get: function() {
-                        // Return our client instance if available
-                        if (supabaseClientInstance) {
-                            return supabaseClientInstance;
-                        }
-                        // Try to initialize
-                        const client = initializeSupabase();
-                        if (client) {
-                            supabaseClientInstance = client;
-                            return client;
-                        }
-                        // Otherwise return the library (for createClient access)
-                        return supabaseLibrary;
-                    },
-                    configurable: true,
-                    enumerable: true
-                });
-            } catch (e) {
-                // Property might already be defined, that's okay
-                console.warn('Could not redefine window.supabase:', e.message);
+            // Check if property descriptor exists and is configurable
+            const descriptor = Object.getOwnPropertyDescriptor(window, 'supabase');
+            if (!descriptor || descriptor.configurable) {
+                try {
+                    Object.defineProperty(window, 'supabase', {
+                        get: function() {
+                            // Return our client instance if available
+                            if (supabaseClientInstance) {
+                                return supabaseClientInstance;
+                            }
+                            // Try to initialize
+                            const client = initializeSupabase();
+                            if (client) {
+                                supabaseClientInstance = client;
+                                return client;
+                            }
+                            // Otherwise return the library (for createClient access)
+                            return supabaseLibrary;
+                        },
+                        configurable: true,
+                        enumerable: true
+                    });
+                } catch (e) {
+                    // Property might already be defined, that's okay - just use it as is
+                    // The getter will still work through window.supabaseClient
+                }
             }
         }
         
