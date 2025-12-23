@@ -6,10 +6,6 @@
   # But we can set publish directory explicitly
   publish = "."
 
-[build.environment]
-  # Node version (if needed for any build tools)
-  NODE_VERSION = "18"
-
 # Headers for security and CORS
 [[headers]]
   for = "/*"

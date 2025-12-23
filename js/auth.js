@@ -1,10 +1,32 @@
 // Authentication Functions
 
+// Helper function to get Supabase client
+function getSupabaseClient() {
+    // Use global getSupabaseClient if available (from config.js)
+    if (typeof window !== 'undefined' && typeof window.getSupabaseClient === 'function') {
+        return window.getSupabaseClient();
+    }
+    // Try to get from window.supabaseClient directly
+    if (typeof window !== 'undefined' && window.supabaseClient) {
+        return window.supabaseClient;
+    }
+    // Last resort: try to initialize
+    if (typeof initializeSupabase === 'function') {
+        const client = initializeSupabase();
+        if (client && typeof window !== 'undefined') {
+            window.supabaseClient = client;
+        }
+        return client;
+    }
+    return null;
+}
+
 /**
  * Sign up new user
  */
 async function signUp(email, password, fullName, phone = null, nationality = null) {
     try {
+        const supabase = getSupabaseClient();
         if (!supabase) {
             throw new Error('Supabase not initialized. Please configure your Supabase credentials in js/config.js');
         }
@@ -206,6 +228,7 @@ async function signUp(email, password, fullName, phone = null, nationality = nul
  */
 async function signIn(email, password) {
     try {
+        const supabase = getSupabaseClient();
         if (!supabase) {
             throw new Error('Supabase not initialized. Please configure your Supabase credentials in js/config.js');
         }
@@ -318,6 +341,7 @@ async function signIn(email, password) {
  */
 async function resendConfirmationEmail(email) {
     try {
+        const supabase = getSupabaseClient();
         if (!supabase) {
             throw new Error('Supabase not initialized');
         }
@@ -339,6 +363,7 @@ async function resendConfirmationEmail(email) {
  */
 async function signOut() {
     try {
+        const supabase = getSupabaseClient();
         if (supabase) {
             const { error } = await supabase.auth.signOut();
             if (error) throw error;
@@ -356,6 +381,7 @@ async function signOut() {
  */
 async function getCurrentAuthUser() {
     try {
+        const supabase = getSupabaseClient();
         if (!supabase) {
             return { data: getCurrentUser(), error: null };
         }
@@ -410,6 +436,7 @@ async function getCurrentAuthUser() {
  */
 async function updateProfile(userId, updates) {
     try {
+        const supabase = getSupabaseClient();
         if (!supabase) {
             throw new Error('Supabase not initialized');
         }
@@ -443,6 +470,7 @@ async function updateProfile(userId, updates) {
  */
 async function signInWithGoogle() {
     try {
+        const supabase = getSupabaseClient();
         if (!supabase) {
             throw new Error('Supabase not initialized. Please configure your Supabase credentials in js/config.js');
         }

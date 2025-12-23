@@ -34,6 +34,10 @@ function initializeSupabase() {
                     detectSessionInUrl: true
                 }
             });
+            // Make supabase available globally
+            if (typeof window !== 'undefined') {
+                window.supabaseClient = supabase;
+            }
             console.log('✅ Supabase initialized successfully');
             isInitializing = false;
             return supabase;
@@ -58,6 +62,10 @@ function initializeSupabase() {
                             detectSessionInUrl: true
                         }
                     });
+                    // Make supabase available globally
+                    if (typeof window !== 'undefined') {
+                        window.supabaseClient = supabase;
+                    }
                     console.log('✅ Supabase initialized successfully (via dynamic import)');
                 }
             } catch (error) {
@@ -97,6 +105,25 @@ function initializeSupabase() {
         }, 5000);
     }
 })();
+
+// Make supabase available globally for other scripts
+if (typeof window !== 'undefined') {
+    // Store the client instance globally
+    window.supabaseClient = supabase;
+    
+    // Also create a function to get the client (will be updated when initialized)
+    window.getSupabaseClient = function() {
+        if (window.supabaseClient) {
+            return window.supabaseClient;
+        }
+        // Try to initialize if not already done
+        const client = initializeSupabase();
+        if (client) {
+            window.supabaseClient = client;
+        }
+        return client;
+    };
+}
 
 // Export for use in other files
 if (typeof module !== 'undefined' && module.exports) {
