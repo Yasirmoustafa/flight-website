@@ -192,7 +192,9 @@
         // Image upload function for Supabase Storage
         async function uploadServiceImage(file) {
             try {
-                if (!supabase) {
+                const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+                
+                if (!supabase || !supabase.storage) {
                     throw new Error('Supabase not initialized');
                 }
 
@@ -348,9 +350,12 @@
 
         async function loadAllServices() {
             try {
+                // Get Supabase client from window
+                const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+                
                 // Get all services (we need to modify getAllServices to get inactive too, or create a new function)
                 // For now, let's get all services from Supabase directly
-                if (!supabase) {
+                if (!supabase || !supabase.from) {
                     console.error('Supabase not initialized');
                     const grid = document.getElementById('servicesAdminGrid');
                     if (grid) {

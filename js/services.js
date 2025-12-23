@@ -5,7 +5,9 @@
  */
 async function getAllServices() {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             // Return placeholder data if Supabase not configured
             const placeholderServices = [
                 {
@@ -80,7 +82,9 @@ async function getFeaturedServices(limit = 3) {
  */
 async function getServiceById(serviceId) {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             return { data: null, error: new Error('Supabase not initialized') };
         }
 
@@ -102,7 +106,9 @@ async function getServiceById(serviceId) {
  */
 async function createService(serviceData) {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             throw new Error('Supabase not initialized');
         }
 
@@ -131,7 +137,9 @@ async function createService(serviceData) {
  */
 async function updateService(serviceId, updates) {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             throw new Error('Supabase not initialized');
         }
 
@@ -163,7 +171,9 @@ async function updateService(serviceId, updates) {
  */
 async function deleteService(serviceId) {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             throw new Error('Supabase not initialized');
         }
 
@@ -184,7 +194,9 @@ async function deleteService(serviceId) {
  */
 async function toggleServiceStatus(serviceId, active) {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             throw new Error('Supabase not initialized');
         }
 

@@ -5,7 +5,9 @@
  */
 async function getDashboardStats() {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             return {
                 totalBookings: 0,
                 pendingBookings: 0,
@@ -61,7 +63,9 @@ async function getDashboardStats() {
  */
 async function getRecentBookings(limit = 10) {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             return { data: [], error: null };
         }
 

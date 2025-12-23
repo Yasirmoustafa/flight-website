@@ -5,7 +5,9 @@
  */
 async function createBooking(bookingData) {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             throw new Error('Supabase not initialized');
         }
 
@@ -39,7 +41,9 @@ async function createBooking(bookingData) {
  */
 async function getUserBookings(userId) {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             return { data: [], error: null };
         }
 
@@ -69,7 +73,9 @@ async function getUserBookings(userId) {
  */
 async function getBookingById(bookingId) {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             return { data: null, error: new Error('Supabase not initialized') };
         }
 
@@ -121,7 +127,9 @@ async function getBookingById(bookingId) {
  */
 async function getAllBookings() {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             return { data: [], error: null };
         }
 
@@ -181,7 +189,9 @@ async function getAllBookings() {
  */
 async function updateBookingStatus(bookingId, status, adminMessage = null) {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             throw new Error('Supabase not initialized');
         }
 
@@ -214,7 +224,9 @@ async function updateBookingStatus(bookingId, status, adminMessage = null) {
  */
 async function getBookingsByStatus(status) {
     try {
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.from) {
             return { data: [], error: null };
         }
 
