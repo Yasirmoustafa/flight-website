@@ -76,7 +76,7 @@ function getRegularNavbar(activePage = '') {
             <div class="nav-content">
                 <div class="logo">
                     <a href="index.html">
-                        <img src="main mark.png" alt="MY FLY CLOUDLY TOURS" class="logo-image" style="height: 45px; width: auto;">
+                        <img src="logo.jpeg" alt="MY FLY CLOUDLY TOURS" class="logo-image" style="height: 45px; width: auto;">
                         <span class="logo-text">MY FLY CLOUDLY TOURS</span>
                     </a>
                 </div>
@@ -181,7 +181,7 @@ function getAdminNavbar(activePage = '') {
             <div class="nav-content">
                 <div class="logo">
                     <a href="../index.html">
-                        <img src="../main mark.png" alt="MY FLY CLOUDLY TOURS" class="logo-image" style="height: 45px; width: auto;">
+                        <img src="../logo.jpeg" alt="MY FLY CLOUDLY TOURS" class="logo-image" style="height: 45px; width: auto;">
                         <span class="logo-text">MY FLY CLOUDLY TOURS</span>
                     </a>
                 </div>

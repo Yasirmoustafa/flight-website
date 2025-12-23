@@ -13,7 +13,7 @@ function getFooter() {
             <div class="footer-main">
                 <div class="footer-left">
                     <div class="footer-brand-block">
-                        <img src="main mark.png" alt="MY FLY CLOUDLY TOURS" class="footer-logo-image" style="height: 60px; width: auto;">
+                        <img src="logo.jpeg" alt="MY FLY CLOUDLY TOURS" class="footer-logo-image" style="height: 60px; width: auto;">
                         <h1 class="footer-title">MY FLY CLOUDLY TOURS</h1>
                     </div>
                     <p class="footer-description" data-i18n="footer.description">Experience the sky like never before. Your journey to aviation excellence starts here.</p>
@@ -82,7 +82,7 @@ function initFooter() {
                 return match;
             });
             // Update image src paths for admin pages
-            footerHTML = footerHTML.replace(/src="main mark\.png"/g, 'src="../main mark.png"');
+            footerHTML = footerHTML.replace(/src="logo\.jpeg"/g, 'src="../logo.jpeg"');
         }
 
         existingFooter.outerHTML = footerHTML;
@@ -107,7 +107,7 @@ function initFooter() {
                 return match;
             });
             // Update image src paths for admin pages
-            footerHTML = footerHTML.replace(/src="main mark\.png"/g, 'src="../main mark.png"');
+            footerHTML = footerHTML.replace(/src="logo\.jpeg"/g, 'src="../logo.jpeg"');
         }
 
         document.body.insertAdjacentHTML('beforeend', footerHTML);
