@@ -234,20 +234,44 @@
             }
 
             // Load full profile from database
+            const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+            
+            if (!supabase || !supabase.from) {
+                console.error('Supabase not initialized');
+                // Show error but don't redirect - user can still see cached data
+                document.getElementById('profileName').textContent = user.full_name || '-';
+                document.getElementById('profileEmail').textContent = user.email || '-';
+                document.getElementById('profilePhone').textContent = user.phone || '-';
+                document.getElementById('profileNationality').textContent = user.nationality || '-';
+                // Try to load bookings anyway
+                await loadUserBookings(user.id);
+                return;
+            }
+            
             const { data: profile, error: profileError } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', user.id)
                 .single();
+            
+            if (profileError) {
+                console.error('Error loading profile:', profileError);
+                // Use cached user data if profile load fails
+                document.getElementById('userName').textContent = user.full_name || user.email;
+                document.getElementById('profileName').textContent = user.full_name || '-';
+                document.getElementById('profileEmail').textContent = user.email || '-';
+                document.getElementById('profilePhone').textContent = user.phone || '-';
+                document.getElementById('profileNationality').textContent = user.nationality || '-';
+            } else {
+                // Update user info with profile data
+                document.getElementById('userName').textContent = profile?.full_name || user.full_name || user.email;
+                document.getElementById('profileName').textContent = profile?.full_name || user.full_name || '-';
+                document.getElementById('profileEmail').textContent = profile?.email || user.email || '-';
+                document.getElementById('profilePhone').textContent = profile?.phone || user.phone || '-';
+                document.getElementById('profileNationality').textContent = profile?.nationality || user.nationality || '-';
+            }
 
-            // Update user info
-            document.getElementById('userName').textContent = user.full_name || user.email;
-            document.getElementById('profileName').textContent = profile?.full_name || user.full_name || '-';
-            document.getElementById('profileEmail').textContent = profile?.email || user.email || '-';
-            document.getElementById('profilePhone').textContent = profile?.phone || user.phone || '-';
-            document.getElementById('profileNationality').textContent = profile?.nationality || user.nationality || '-';
-
-            // Load user bookings
+            // Load user bookings (always load, regardless of profile load success)
             await loadUserBookings(user.id);
 
             // Logout is handled by main.js updateNavigation()
@@ -265,11 +289,25 @@
         }, 1000);
 
         async function loadUserBookings(userId) {
-            const { data: bookings, error } = await getUserBookings(userId);
             const bookingsList = document.getElementById('bookingsList');
+            
+            if (!bookingsList) {
+                console.error('Bookings list container not found');
+                return;
+            }
+            
+            // Show loading state
+            bookingsList.innerHTML = '<div class="empty-state"><p>Loading bookings...</p></div>';
+            
+            const { data: bookings, error } = await getUserBookings(userId);
 
             if (error) {
                 console.error('Error loading bookings:', error);
+                const errorText = typeof t === 'function' ? t('dashboard.errorLoadingBookings') : 'Error loading bookings:';
+                bookingsList.innerHTML = `<div class="empty-state"><p>${errorText} ${error.message || 'Unknown error'}</p></div>`;
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 100);
+                }
                 return;
             }
 

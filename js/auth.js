@@ -1,23 +1,14 @@
 // Authentication Functions
 
-// Helper function to get Supabase client - use global function from config.js
-function getSupabaseClient() {
-    // Always use the global function from config.js to avoid conflicts
-    if (typeof window !== 'undefined' && typeof window.getSupabaseClient === 'function') {
-        return window.getSupabaseClient();
-    }
-    // Fallback: return null if not available (shouldn't happen if config.js loaded first)
-    console.warn('Supabase client not available. Make sure config.js is loaded before auth.js');
-    return null;
-}
-
 /**
  * Sign up new user
  */
 async function signUp(email, password, fullName, phone = null, nationality = null) {
     try {
-        const supabase = getSupabaseClient();
-        if (!supabase) {
+        // Get supabase client from window
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.auth) {
             throw new Error('Supabase not initialized. Please configure your Supabase credentials in js/config.js');
         }
 
@@ -218,8 +209,10 @@ async function signUp(email, password, fullName, phone = null, nationality = nul
  */
 async function signIn(email, password) {
     try {
-        const supabase = getSupabaseClient();
-        if (!supabase) {
+        // Get supabase client from window (handles both library and client)
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.auth) {
             throw new Error('Supabase not initialized. Please configure your Supabase credentials in js/config.js');
         }
 
@@ -331,8 +324,9 @@ async function signIn(email, password) {
  */
 async function resendConfirmationEmail(email) {
     try {
-        const supabase = getSupabaseClient();
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.auth) {
             throw new Error('Supabase not initialized');
         }
 
@@ -353,8 +347,9 @@ async function resendConfirmationEmail(email) {
  */
 async function signOut() {
     try {
-        const supabase = getSupabaseClient();
-        if (supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (supabase && supabase.auth) {
             const { error } = await supabase.auth.signOut();
             if (error) throw error;
         }
@@ -371,8 +366,9 @@ async function signOut() {
  */
 async function getCurrentAuthUser() {
     try {
-        const supabase = getSupabaseClient();
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.auth) {
             return { data: getCurrentUser(), error: null };
         }
 
@@ -426,7 +422,8 @@ async function getCurrentAuthUser() {
  */
 async function updateProfile(userId, updates) {
     try {
-        const supabase = getSupabaseClient();
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
         if (!supabase) {
             throw new Error('Supabase not initialized');
         }
@@ -460,8 +457,9 @@ async function updateProfile(userId, updates) {
  */
 async function signInWithGoogle() {
     try {
-        const supabase = getSupabaseClient();
-        if (!supabase) {
+        const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+        
+        if (!supabase || !supabase.auth) {
             throw new Error('Supabase not initialized. Please configure your Supabase credentials in js/config.js');
         }
 

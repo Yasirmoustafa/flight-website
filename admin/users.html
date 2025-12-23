@@ -92,6 +92,7 @@
     <script src="../js/navbar.js"></script>
     <script src="../js/footer.js"></script>
     <script src="../js/admin.js"></script>
+    <script src="../js/pagination.js"></script>
     <script src="../js/main.js"></script>
     <script>
         // Initialize navbar and footer
@@ -283,8 +284,12 @@
 
                 allUsers = enhancedProfiles;
 
-                // Render users
-                renderUsers(allUsers);
+                // Initialize pagination
+                if (typeof initPagination === 'function') {
+                    initPagination('usersTableBody', allUsers, renderUsers, 10);
+                } else {
+                    renderUsers(allUsers);
+                }
             } catch (error) {
                 console.error('Error loading users:', error);
                 const errorText = typeof t === 'function' ? t('admin.errorLoadingUsers') : 'Error loading users';
@@ -394,7 +399,12 @@
                 });
             }
 
-            renderUsers(filtered);
+            // Update pagination with filtered data
+            if (typeof updatePaginationData === 'function') {
+                updatePaginationData('usersTableBody', filtered);
+            } else {
+                renderUsers(filtered);
+            }
         }
 
         async function deleteUser(userId, userName) {

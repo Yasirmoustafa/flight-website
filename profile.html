@@ -163,6 +163,17 @@
             }
 
             // Load current profile data
+            const supabase = typeof window !== 'undefined' ? (window.supabaseClient || window.supabase) : null;
+            
+            if (!supabase || !supabase.from) {
+                console.error('Supabase not initialized');
+                const errorDiv = document.getElementById('errorMessage');
+                if (errorDiv) {
+                    showError(errorDiv, 'Database connection error. Please refresh the page.');
+                }
+                return;
+            }
+            
             const { data: profile, error } = await supabase
                 .from('profiles')
                 .select('*')

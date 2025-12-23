@@ -203,6 +203,13 @@ const translations = {
             updateSuccess: 'Profile updated successfully!',
             updateError: 'Failed to update profile. Please try again.'
         },
+        // Pagination
+        pagination: {
+            page: 'Page',
+            of: 'of',
+            previous: 'Previous page',
+            next: 'Next page'
+        },
         // Admin
         admin: {
             dashboard: 'Admin Dashboard',
@@ -579,6 +586,13 @@ const translations = {
             selectNationalityError: 'يرجى اختيار جنسيتك',
             updateSuccess: 'تم تحديث الملف الشخصي بنجاح!',
             updateError: 'فشل تحديث الملف الشخصي. يرجى المحاولة مرة أخرى.'
+        },
+        // Pagination
+        pagination: {
+            page: 'صفحة',
+            of: 'من',
+            previous: 'الصفحة السابقة',
+            next: 'الصفحة التالية'
         },
         // Admin
         admin: {

@@ -133,6 +133,7 @@
     <script src="../js/footer.js"></script>
     <script src="../js/bookings.js"></script>
     <script src="../js/admin.js"></script>
+    <script src="../js/pagination.js"></script>
     <script src="../js/main.js"></script>
     <script>
         // Initialize navbar and footer
@@ -264,7 +265,13 @@
 
                 allBookings = bookings || [];
                 filteredBookings = [...allBookings];
-                renderBookings();
+                
+                // Initialize pagination
+                if (typeof initPagination === 'function') {
+                    initPagination('bookingsTableBody', filteredBookings, renderBookings, 10);
+                } else {
+                    renderBookings();
+                }
             } catch (error) {
                 console.error('Error loading bookings:', error);
                 const errorText = typeof t === 'function' ? t('admin.errorLoadingBookings') : 'Error loading bookings:';
@@ -276,12 +283,18 @@
             }
         }
 
-        function renderBookings() {
+        function renderBookings(bookingsToRender = null) {
             const tableBody = document.getElementById('bookingsTableBody');
+            const bookings = bookingsToRender || filteredBookings;
 
-            if (filteredBookings.length === 0) {
+            if (bookings.length === 0) {
                 const noBookingsText = typeof t === 'function' ? t('admin.noBookingsFound') : 'No bookings found';
                 tableBody.innerHTML = `<tr><td colspan="8" class="text-center">${noBookingsText}</td></tr>`;
+                // Remove pagination if exists
+                const existingPagination = document.querySelector('.pagination-container');
+                if (existingPagination) {
+                    existingPagination.remove();
+                }
                 // Apply translations to dynamically generated content
                 if (typeof applyTranslations === 'function') {
                     setTimeout(() => applyTranslations(), 100);
@@ -289,7 +302,7 @@
                 return;
             }
 
-            tableBody.innerHTML = filteredBookings.map(booking => {
+            tableBody.innerHTML = bookings.map(booking => {
                 // Handle nested objects - Supabase returns them as objects
                 const service = booking.services || {};
                 const profile = booking.profiles || {};
@@ -365,7 +378,13 @@
             } else {
                 filteredBookings = allBookings.filter(b => b.status === status);
             }
-            renderBookings();
+            
+            // Update pagination with new filtered data
+            if (typeof updatePaginationData === 'function') {
+                updatePaginationData('bookingsTableBody', filteredBookings);
+            } else {
+                renderBookings();
+            }
         }
 
         function searchBookings(query) {
@@ -379,7 +398,13 @@
                     (service.name && service.name.toLowerCase().includes(lowerQuery))
                 );
             });
-            renderBookings();
+            
+            // Update pagination with new filtered data
+            if (typeof updatePaginationData === 'function') {
+                updatePaginationData('bookingsTableBody', filteredBookings);
+            } else {
+                renderBookings();
+            }
         }
 
         async function viewBookingDetails(bookingId) {

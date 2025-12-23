@@ -5,8 +5,10 @@
   # Since this is a static site, no build command needed
   # But we can set publish directory explicitly
   publish = "."
-  # Explicitly set no build command for static site
-  command = ""
+
+[build.environment]
+  # Node version (if needed for any build tools)
+  NODE_VERSION = "18"
 
 # Headers for security and CORS
 [[headers]]

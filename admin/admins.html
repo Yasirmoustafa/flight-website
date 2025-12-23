@@ -100,6 +100,7 @@
     <script src="../js/i18n.js"></script>
     <script src="../js/navbar.js"></script>
     <script src="../js/footer.js"></script>
+    <script src="../js/pagination.js"></script>
     <script src="../js/main.js"></script>
     <script>
         // Initialize navbar and footer
@@ -257,19 +258,43 @@
                 console.log('Filtered admins:', admins); // Debug
                 console.log('Number of admins:', admins?.length || 0); // Debug
 
-                const tableBody = document.getElementById('adminsTableBody');
-                const currentUser = getCurrentUser();
-
-                if (!admins || admins.length === 0) {
-                    const noAdminsText = typeof t === 'function' ? t('admin.noAdminsFound') : 'No admins found';
-                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center">${noAdminsText}</td></tr>`;
-                    if (typeof applyTranslations === 'function') {
-                        setTimeout(() => applyTranslations(), 100);
-                    }
-                    return;
+                // Initialize pagination
+                if (typeof initPagination === 'function') {
+                    initPagination('adminsTableBody', admins, renderAdmins, 10);
+                } else {
+                    renderAdmins(admins);
                 }
+            } catch (error) {
+                console.error('Error loading admins:', error);
+                const errorText = typeof t === 'function' ? t('admin.errorLoadingAdmins') : 'Error loading admins:';
+                document.getElementById('adminsTableBody').innerHTML =
+                    `<tr><td colspan="5" class="text-center">${errorText} ${error.message || 'Unknown error'}</td></tr>`;
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 100);
+                }
+            }
+        }
 
-                tableBody.innerHTML = admins.map(admin => {
+        function renderAdmins(adminsToRender = null) {
+            const tableBody = document.getElementById('adminsTableBody');
+            const admins = adminsToRender || [];
+            const currentUser = getCurrentUser();
+
+            if (!admins || admins.length === 0) {
+                const noAdminsText = typeof t === 'function' ? t('admin.noAdminsFound') : 'No admins found';
+                tableBody.innerHTML = `<tr><td colspan="5" class="text-center">${noAdminsText}</td></tr>`;
+                // Remove pagination if exists
+                const existingPagination = document.querySelector('.pagination-container');
+                if (existingPagination) {
+                    existingPagination.remove();
+                }
+                if (typeof applyTranslations === 'function') {
+                    setTimeout(() => applyTranslations(), 100);
+                }
+                return;
+            }
+
+            tableBody.innerHTML = admins.map(admin => {
                     const isCurrentUser = currentUser && currentUser.id === admin.id;
                     // Try to get email: from profile first, then from current user, or show message
                     let email = admin.email;
