@@ -1384,7 +1384,7 @@ body:has(.hero) .navbar:not(.scrolled) .burger-button span {
 }
 
 /* Responsive adjustments */
-@media (max-width: 968px) {
+@media (max-width: 768px) {
     .about-section {
         padding: var(--spacing-xl) 0;
         min-height: auto;
